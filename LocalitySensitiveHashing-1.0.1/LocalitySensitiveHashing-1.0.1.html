@@ -1,0 +1,911 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head>
+<title>
+LocalitySensitiveHashing-1.0.1.html
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body bgcolor="#f0f0f8">
+<table width="100%" cellspacing="0" cellpadding="2" border="0" summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>LocalitySensitiveHashing</strong></big></big> (version 1.0.1, 2017-May-25)</font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial">
+</font></td></tr></table>
+<p><tt>LocalitySensitiveHashing</tt>.py<br>
+<tt>
+&nbsp;<br>
+Version:&nbsp;1.0.1<br>
+&nbsp;&nbsp;&nbsp;<br>
+Author:&nbsp;Avinash&nbsp;Kak&nbsp;(kak@purdue.edu)<br>
+&nbsp;<br>
+Date:&nbsp;2017-May-25<br>
+&nbsp;<br>
+&nbsp;<br>
+</tt>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="2"> 
+<TR>
+<TH ALIGN=left>
+<tt>
+<b>Download Version 1.0.1:</b>&nbsp;  
+<a HREF="https://engineering.purdue.edu/kak/distLSH/LocalitySensitiveHashing-1.0.1.tar.gz?download">gztar</a> 
+&nbsp;             
+<a HREF="https://engineering.purdue.edu/kak/distLSH/LocalitySensitiveHashing-1.0.1.tar.bz2?download">bztar</a> 
+<br>
+<br>
+&nbsp;
+</tt>
+</TH>
+<TD>
+<tt>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Total number of downloads (all versions): 
+<?php   
+    $file = fopen("HowManyCounts.txt", "r") or exit("Unable to open file!");
+    echo fgets($file);
+    fclose($file);
+?>
+</tt>
+<br>
+<center>
+<tt>
+<font color="red" size="-2">
+&nbsp;&nbsp;&nbsp;&nbsp;
+This count is automatically updated at every rotation of
+<br> 
+&nbsp;&nbsp;&nbsp;&nbsp;
+the weblogs (normally once every two to four days)
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Last updated:
+<?php   
+    $file = fopen("LastUpdated.txt", "r") or exit("Unable to open file!");
+    echo fgets($file);
+    fclose($file);
+?>
+</font>
+</tt>
+</center>
+</TD>
+</TR>
+</TABLE>
+<tt>
+<a HREF="LocalitySensitiveHashing-1.0.1_CodeOnly.html">View version 1.0.1 code in browser</a> 
+&nbsp;<br>
+&nbsp;<br>
+&nbsp;<br>
+<font size="+2" color="red">CHANGES:<br>
+</font>
+<br>
+&nbsp;&nbsp;Version&nbsp;1.0.1:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;version&nbsp;fixes&nbsp;the&nbsp;typos&nbsp;and&nbsp;other&nbsp;errors&nbsp;discovered&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;documentation.&nbsp;&nbsp;The&nbsp;module&nbsp;code&nbsp;remains&nbsp;unchanged.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;<br>
+<font size=+2 color="red">INTRODUCTION:<br>
+</font>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;<a href="#LocalitySensitiveHashing">LocalitySensitiveHashing</a>&nbsp;module&nbsp;is&nbsp;an&nbsp;implementation&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Locality&nbsp;Sensitive&nbsp;Hashing&nbsp;(LSH)&nbsp;algorithm&nbsp;for&nbsp;nearest&nbsp;neighbor&nbsp;search.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;main&nbsp;idea&nbsp;in&nbsp;LSH&nbsp;is&nbsp;to&nbsp;avoid&nbsp;having&nbsp;to&nbsp;compare&nbsp;every&nbsp;pair&nbsp;of&nbsp;data<br>
+&nbsp;&nbsp;&nbsp;&nbsp;samples&nbsp;in&nbsp;a&nbsp;large&nbsp;dataset&nbsp;in&nbsp;order&nbsp;to&nbsp;find&nbsp;the&nbsp;nearest&nbsp;similar<br>
+&nbsp;&nbsp;&nbsp;&nbsp;neighbors&nbsp;for&nbsp;the&nbsp;different&nbsp;data&nbsp;samples.&nbsp;&nbsp;With&nbsp;LSH,&nbsp;one&nbsp;can&nbsp;expect&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;sample&nbsp;and&nbsp;its&nbsp;closest&nbsp;similar&nbsp;neighbors&nbsp;to&nbsp;be&nbsp;hashed&nbsp;into&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;same&nbsp;bucket&nbsp;with&nbsp;a&nbsp;high&nbsp;probability.&nbsp;&nbsp;By&nbsp;treating&nbsp;the&nbsp;data&nbsp;samples<br>
+&nbsp;&nbsp;&nbsp;&nbsp;placed&nbsp;in&nbsp;the&nbsp;same&nbsp;bucket&nbsp;as&nbsp;candidates&nbsp;for&nbsp;similarity&nbsp;checking,&nbsp;we<br>
+&nbsp;&nbsp;&nbsp;&nbsp;significantly&nbsp;reduce&nbsp;the&nbsp;computational&nbsp;burden&nbsp;associated&nbsp;with&nbsp;finding<br>
+&nbsp;&nbsp;&nbsp;&nbsp;nearest&nbsp;neighbors&nbsp;in&nbsp;large&nbsp;datasets.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;While&nbsp;LSH&nbsp;algorithms&nbsp;have&nbsp;traditionally&nbsp;been&nbsp;used&nbsp;for&nbsp;finding&nbsp;nearest<br>
+&nbsp;&nbsp;&nbsp;&nbsp;neighbors,&nbsp;this&nbsp;module&nbsp;goes&nbsp;a&nbsp;step&nbsp;further&nbsp;and&nbsp;explores&nbsp;using&nbsp;LSH&nbsp;for<br>
+&nbsp;&nbsp;&nbsp;&nbsp;clustering&nbsp;the&nbsp;data.&nbsp;&nbsp;Strictly&nbsp;speaking,&nbsp;this&nbsp;violates&nbsp;the&nbsp;basic<br>
+&nbsp;&nbsp;&nbsp;&nbsp;mandate&nbsp;of&nbsp;LSH,&nbsp;which&nbsp;is&nbsp;to&nbsp;return&nbsp;just&nbsp;the&nbsp;nearest&nbsp;neighbors.&nbsp;(A&nbsp;data<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sample&nbsp;X&nbsp;being&nbsp;Y's&nbsp;nearest&nbsp;neighbor&nbsp;and&nbsp;Y&nbsp;being&nbsp;Z's&nbsp;nearest&nbsp;neighbor,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;the&nbsp;sense&nbsp;nearest&nbsp;neighbors&nbsp;are&nbsp;commonly&nbsp;defined&nbsp;with&nbsp;the&nbsp;Cosine<br>
+&nbsp;&nbsp;&nbsp;&nbsp;metric&nbsp;in&nbsp;LSH,&nbsp;does&nbsp;not&nbsp;always&nbsp;imply&nbsp;that&nbsp;X&nbsp;and&nbsp;Z&nbsp;will&nbsp;be&nbsp;sufficiently<br>
+&nbsp;&nbsp;&nbsp;&nbsp;close&nbsp;to&nbsp;be&nbsp;considered&nbsp;each&nbsp;other's&nbsp;nearest&nbsp;neighbors.)&nbsp;&nbsp;Nonetheless,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;you&nbsp;believe&nbsp;that&nbsp;your&nbsp;datafile&nbsp;consists&nbsp;of&nbsp;non-overlapping&nbsp;data<br>
+&nbsp;&nbsp;&nbsp;&nbsp;clusters,&nbsp;this&nbsp;module&nbsp;may&nbsp;do&nbsp;a&nbsp;decent&nbsp;job&nbsp;of&nbsp;finding&nbsp;those&nbsp;clusters.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;rest&nbsp;of&nbsp;this&nbsp;section&nbsp;reviews&nbsp;the&nbsp;basic&nbsp;notions&nbsp;in&nbsp;LSH&nbsp;to&nbsp;help&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;user&nbsp;of&nbsp;this&nbsp;module&nbsp;understand&nbsp;the&nbsp;implementation&nbsp;code.&nbsp;&nbsp;As&nbsp;to&nbsp;how<br>
+&nbsp;&nbsp;&nbsp;&nbsp;these&nbsp;notions&nbsp;are&nbsp;used&nbsp;for&nbsp;clustering&nbsp;will&nbsp;be&nbsp;taken&nbsp;up&nbsp;in&nbsp;the&nbsp;next<br>
+&nbsp;&nbsp;&nbsp;&nbsp;section.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;hash&nbsp;function&nbsp;is&nbsp;locality&nbsp;sensitive&nbsp;if&nbsp;it&nbsp;places&nbsp;similar&nbsp;samples&nbsp;in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;same&nbsp;bucket&nbsp;with&nbsp;a&nbsp;high&nbsp;probability,&nbsp;and&nbsp;if&nbsp;it&nbsp;places&nbsp;dissimilar<br>
+&nbsp;&nbsp;&nbsp;&nbsp;samples&nbsp;in&nbsp;the&nbsp;same&nbsp;bucket&nbsp;with&nbsp;a&nbsp;low&nbsp;probability.&nbsp;&nbsp;Two&nbsp;data&nbsp;samples<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;considered&nbsp;to&nbsp;be&nbsp;similar&nbsp;if&nbsp;the&nbsp;"distance"&nbsp;between&nbsp;them&nbsp;is&nbsp;at&nbsp;most<br>
+&nbsp;&nbsp;&nbsp;&nbsp;d1&nbsp;and&nbsp;two&nbsp;data&nbsp;samples&nbsp;are&nbsp;considered&nbsp;dissimilar&nbsp;if&nbsp;the&nbsp;"distance"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;between&nbsp;them&nbsp;is&nbsp;at&nbsp;least&nbsp;d2&nbsp;=&nbsp;c&nbsp;*&nbsp;d1,&nbsp;with&nbsp;c&nbsp;&gt;&nbsp;1.&nbsp;(As&nbsp;for&nbsp;how&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;measure&nbsp;this&nbsp;"distance",&nbsp;for&nbsp;numerical&nbsp;data&nbsp;in&nbsp;a&nbsp;vector&nbsp;space,&nbsp;we&nbsp;have<br>
+&nbsp;&nbsp;&nbsp;&nbsp;several&nbsp;distance&nbsp;measures&nbsp;at&nbsp;our&nbsp;disposal.&nbsp;&nbsp;For&nbsp;example,&nbsp;we&nbsp;could&nbsp;use<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;Cosine&nbsp;distances&nbsp;or&nbsp;the&nbsp;L2-norm,&nbsp;etc.)&nbsp;&nbsp;For&nbsp;given&nbsp;d1&nbsp;and&nbsp;d2,&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;quality&nbsp;of&nbsp;a&nbsp;locality-sensitive&nbsp;hash&nbsp;function&nbsp;is&nbsp;measured&nbsp;by&nbsp;two<br>
+&nbsp;&nbsp;&nbsp;&nbsp;probabilities,&nbsp;p1&nbsp;and&nbsp;p2,&nbsp;where&nbsp;the&nbsp;former&nbsp;is&nbsp;the&nbsp;the&nbsp;least&nbsp;probability<br>
+&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;collision&nbsp;for&nbsp;similar&nbsp;samples&nbsp;(which&nbsp;is&nbsp;something&nbsp;that&nbsp;we&nbsp;want)&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;latter&nbsp;the&nbsp;largest&nbsp;probability&nbsp;of&nbsp;collision&nbsp;for&nbsp;dissimilar&nbsp;samples<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(which&nbsp;is&nbsp;something&nbsp;that&nbsp;we&nbsp;do&nbsp;NOT&nbsp;want).&nbsp;&nbsp;For&nbsp;obvious&nbsp;reasons,&nbsp;you'd<br>
+&nbsp;&nbsp;&nbsp;&nbsp;want&nbsp;p1&nbsp;to&nbsp;be&nbsp;as&nbsp;high&nbsp;as&nbsp;possible&nbsp;and&nbsp;p2&nbsp;to&nbsp;be&nbsp;as&nbsp;low&nbsp;as&nbsp;possible.&nbsp;&nbsp;The<br>
+&nbsp;&nbsp;&nbsp;&nbsp;locality&nbsp;sensitivity&nbsp;of&nbsp;such&nbsp;a&nbsp;hash&nbsp;function&nbsp;is&nbsp;characterized&nbsp;by&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;4-tuple&nbsp;(d1,d2,p1,p2).&nbsp;&nbsp;We&nbsp;may&nbsp;refer&nbsp;to&nbsp;p1&nbsp;as&nbsp;the&nbsp;least&nbsp;probability&nbsp;for<br>
+&nbsp;&nbsp;&nbsp;&nbsp;detecting&nbsp;the&nbsp;true&nbsp;positives&nbsp;and&nbsp;p2&nbsp;as&nbsp;largest&nbsp;probability&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;encountering&nbsp;false&nbsp;positives.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;In&nbsp;practice,&nbsp;it&nbsp;is&nbsp;not&nbsp;possible&nbsp;to&nbsp;come&nbsp;up&nbsp;with&nbsp;a&nbsp;single&nbsp;hash&nbsp;function<br>
+&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;acceptably&nbsp;high&nbsp;true-positive&nbsp;probability&nbsp;and&nbsp;acceptably&nbsp;low<br>
+&nbsp;&nbsp;&nbsp;&nbsp;false-positive&nbsp;probability.&nbsp;&nbsp;However,&nbsp;it&nbsp;has&nbsp;been&nbsp;shown&nbsp;that&nbsp;a&nbsp;large<br>
+&nbsp;&nbsp;&nbsp;&nbsp;number&nbsp;of&nbsp;hash&nbsp;functions&nbsp;working&nbsp;together&nbsp;in&nbsp;an&nbsp;AND-OR&nbsp;structure&nbsp;can<br>
+&nbsp;&nbsp;&nbsp;&nbsp;give&nbsp;us&nbsp;the&nbsp;desired&nbsp;values&nbsp;for&nbsp;p1&nbsp;and&nbsp;p2.&nbsp;&nbsp;One&nbsp;starts&nbsp;out&nbsp;with&nbsp;a&nbsp;basic<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hash&nbsp;function&nbsp;that&nbsp;places&nbsp;similar&nbsp;samples&nbsp;in&nbsp;the&nbsp;same&nbsp;bucket&nbsp;with&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;high&nbsp;probability,&nbsp;but&nbsp;that,&nbsp;at&nbsp;the&nbsp;same&nbsp;time,&nbsp;places&nbsp;any&nbsp;two&nbsp;dissimilar<br>
+&nbsp;&nbsp;&nbsp;&nbsp;samples&nbsp;in&nbsp;the&nbsp;same&nbsp;bucket&nbsp;with&nbsp;NOT&nbsp;a&nbsp;sufficiently&nbsp;low&nbsp;probability.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Subsequently,&nbsp;one&nbsp;can&nbsp;require&nbsp;that&nbsp;for&nbsp;any&nbsp;two&nbsp;given&nbsp;samples&nbsp;to&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;considered&nbsp;candidates&nbsp;for&nbsp;similarity,&nbsp;they&nbsp;must&nbsp;be&nbsp;in&nbsp;the&nbsp;same&nbsp;bucket<br>
+&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;a&nbsp;set&nbsp;of&nbsp;r&nbsp;random&nbsp;variants&nbsp;of&nbsp;the&nbsp;same&nbsp;basic&nbsp;hash&nbsp;function.&nbsp;&nbsp;This<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;referred&nbsp;to&nbsp;as&nbsp;enforcing&nbsp;an&nbsp;ÁND&nbsp;over&nbsp;the&nbsp;r&nbsp;hash&nbsp;functions&nbsp;in&nbsp;order<br>
+&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;decrease&nbsp;the&nbsp;collisions&nbsp;for&nbsp;dissimilar&nbsp;samples.&nbsp;&nbsp;Since&nbsp;the&nbsp;ÁND<br>
+&nbsp;&nbsp;&nbsp;&nbsp;operation&nbsp;can&nbsp;also&nbsp;diminish&nbsp;the&nbsp;probability&nbsp;of&nbsp;collisions&nbsp;for&nbsp;similar<br>
+&nbsp;&nbsp;&nbsp;&nbsp;samples,&nbsp;we&nbsp;introduce&nbsp;an&nbsp;OR&nbsp;operation,&nbsp;which&nbsp;consists&nbsp;of&nbsp;ORing&nbsp;over&nbsp;b<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bands&nbsp;of&nbsp;ANDed&nbsp;operations.&nbsp;&nbsp;Before&nbsp;visiting&nbsp;the&nbsp;collision&nbsp;probabilities<br>
+&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;similar&nbsp;and&nbsp;dissimilar&nbsp;samples&nbsp;associated&nbsp;with&nbsp;this&nbsp;AND-OR&nbsp;logic,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;let&nbsp;me&nbsp;further&nbsp;illustrate&nbsp;in&nbsp;the&nbsp;next&nbsp;paragraph&nbsp;as&nbsp;to&nbsp;what&nbsp;is&nbsp;meant&nbsp;by<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;AND&nbsp;and&nbsp;the&nbsp;OR&nbsp;operations.&nbsp;&nbsp;I'll&nbsp;do&nbsp;so&nbsp;by&nbsp;alluding&nbsp;to&nbsp;the&nbsp;basic<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;structure,&nbsp;htable_rows,&nbsp;that&nbsp;the&nbsp;module&nbsp;uses&nbsp;for&nbsp;the&nbsp;AND&nbsp;and&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;OR&nbsp;operations.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;module&nbsp;implements&nbsp;the&nbsp;AND-OR&nbsp;idea&nbsp;described&nbsp;above&nbsp;in&nbsp;the&nbsp;following<br>
+&nbsp;&nbsp;&nbsp;&nbsp;manner:&nbsp;The&nbsp;module&nbsp;constructs&nbsp;a&nbsp;2D&nbsp;bit&nbsp;array,&nbsp;represented&nbsp;by<br>
+&nbsp;&nbsp;&nbsp;&nbsp;htable_rows&nbsp;in&nbsp;the&nbsp;code,&nbsp;in&nbsp;which&nbsp;each&nbsp;row&nbsp;corresponds&nbsp;to&nbsp;a&nbsp;different<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hash&nbsp;function&nbsp;and&nbsp;each&nbsp;column&nbsp;corresponds&nbsp;to&nbsp;a&nbsp;data&nbsp;sample.&nbsp;&nbsp;The&nbsp;total<br>
+&nbsp;&nbsp;&nbsp;&nbsp;number&nbsp;of&nbsp;rows&nbsp;in&nbsp;htable_rows&nbsp;is&nbsp;b*r&nbsp;where&nbsp;r&nbsp;is&nbsp;the&nbsp;number&nbsp;of&nbsp;hash<br>
+&nbsp;&nbsp;&nbsp;&nbsp;functions&nbsp;over&nbsp;which&nbsp;we&nbsp;want&nbsp;to&nbsp;carry&nbsp;out&nbsp;the&nbsp;AND&nbsp;operation&nbsp;and&nbsp;b&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;number&nbsp;of&nbsp;such&nbsp;bands&nbsp;of&nbsp;r&nbsp;hash&nbsp;functions&nbsp;for&nbsp;the&nbsp;OR&nbsp;operation.&nbsp;&nbsp;To<br>
+&nbsp;&nbsp;&nbsp;&nbsp;elaborate,&nbsp;assume&nbsp;that&nbsp;both&nbsp;r&nbsp;and&nbsp;b&nbsp;are&nbsp;set&nbsp;to&nbsp;3&nbsp;and&nbsp;that&nbsp;we&nbsp;have&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;total&nbsp;of&nbsp;5&nbsp;data&nbsp;samples.&nbsp;The&nbsp;2D&nbsp;array&nbsp;of&nbsp;1's&nbsp;and&nbsp;0's&nbsp;in&nbsp;htable_rows<br>
+&nbsp;&nbsp;&nbsp;&nbsp;could&nbsp;look&nbsp;like&nbsp;what&nbsp;is&nbsp;shown&nbsp;below:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;samples&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x5<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----------------------------------<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h1&nbsp;&nbsp;|&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b=0&nbsp;&nbsp;r=0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h2&nbsp;&nbsp;|&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b=0&nbsp;&nbsp;r=1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hash&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h3&nbsp;&nbsp;|&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b=0&nbsp;&nbsp;r=2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;functions&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h4&nbsp;&nbsp;|&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b=1&nbsp;&nbsp;r=0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h5&nbsp;&nbsp;|&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b=1&nbsp;&nbsp;r=1&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h6&nbsp;&nbsp;|&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b=1&nbsp;&nbsp;r=2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h7&nbsp;&nbsp;|&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b=2&nbsp;&nbsp;r=0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h8&nbsp;&nbsp;|&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b=2&nbsp;&nbsp;r=1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h9&nbsp;&nbsp;|&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b=2&nbsp;&nbsp;r=2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;where&nbsp;an&nbsp;entry&nbsp;of&nbsp;"1"&nbsp;means&nbsp;that&nbsp;the&nbsp;hyperplane&nbsp;hash&nbsp;function&nbsp;placed<br>
+&nbsp;&nbsp;&nbsp;&nbsp;that&nbsp;data&nbsp;sample&nbsp;in&nbsp;the&nbsp;"plus"&nbsp;bucket&nbsp;and&nbsp;an&nbsp;entry&nbsp;of&nbsp;"0"&nbsp;means&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;data&nbsp;sample&nbsp;was&nbsp;placed&nbsp;in&nbsp;the&nbsp;"minus"&nbsp;bucket.&nbsp;&nbsp;When&nbsp;the&nbsp;entry&nbsp;is&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dot&nbsp;".",&nbsp;that&nbsp;means&nbsp;we&nbsp;don't&nbsp;care&nbsp;about&nbsp;that&nbsp;entry&nbsp;for&nbsp;the&nbsp;sake&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;explanation&nbsp;here.&nbsp;(Showing&nbsp;1s&nbsp;and&nbsp;0s&nbsp;for&nbsp;all&nbsp;entries&nbsp;would&nbsp;create&nbsp;too<br>
+&nbsp;&nbsp;&nbsp;&nbsp;much&nbsp;visual&nbsp;clutter&nbsp;in&nbsp;the&nbsp;table.)&nbsp;Note&nbsp;also&nbsp;that,&nbsp;on&nbsp;the&nbsp;right&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;table,&nbsp;I&nbsp;have&nbsp;taken&nbsp;the&nbsp;liberty&nbsp;of&nbsp;using&nbsp;the&nbsp;symbol&nbsp;b&nbsp;as&nbsp;the&nbsp;index<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vis-a-vis&nbsp;the&nbsp;parameter&nbsp;b,&nbsp;and&nbsp;the&nbsp;symbol&nbsp;r&nbsp;as&nbsp;the&nbsp;index&nbsp;vis-a-vis&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;parameter&nbsp;r.&nbsp;&nbsp;Each&nbsp;distinct&nbsp;value&nbsp;for&nbsp;the&nbsp;index&nbsp;b&nbsp;shows&nbsp;a&nbsp;separate&nbsp;band<br>
+&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;hash&nbsp;functions.&nbsp;&nbsp;And&nbsp;each&nbsp;distinct&nbsp;value&nbsp;for&nbsp;the&nbsp;index&nbsp;r&nbsp;for<br>
+&nbsp;&nbsp;&nbsp;&nbsp;each&nbsp;index&nbsp;b&nbsp;shows&nbsp;the&nbsp;output&nbsp;of&nbsp;a&nbsp;separate&nbsp;hash&nbsp;function&nbsp;within&nbsp;each<br>
+&nbsp;&nbsp;&nbsp;&nbsp;band.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;AND-OR&nbsp;property&nbsp;says&nbsp;that&nbsp;for&nbsp;any&nbsp;two&nbsp;data&nbsp;samples&nbsp;to&nbsp;be&nbsp;considered<br>
+&nbsp;&nbsp;&nbsp;&nbsp;similar&nbsp;they&nbsp;must&nbsp;agree&nbsp;with&nbsp;respect&nbsp;to&nbsp;all&nbsp;the&nbsp;hash&nbsp;values&nbsp;in&nbsp;ALL&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;r&nbsp;rows&nbsp;IN&nbsp;AT&nbsp;LEAST&nbsp;ONE&nbsp;of&nbsp;the&nbsp;b&nbsp;bands.&nbsp;&nbsp;(Now&nbsp;I&nbsp;am&nbsp;using&nbsp;b&nbsp;and&nbsp;r&nbsp;as<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;parameters&nbsp;of&nbsp;the&nbsp;algorithm.&nbsp;&nbsp;In&nbsp;the&nbsp;example&nbsp;shown&nbsp;above,&nbsp;both&nbsp;b<br>
+&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;r&nbsp;are&nbsp;set&nbsp;to&nbsp;3.)&nbsp;&nbsp;Based&nbsp;on&nbsp;this&nbsp;property,&nbsp;we&nbsp;claim&nbsp;that&nbsp;we&nbsp;have&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;following&nbsp;candidate&nbsp;pairs&nbsp;that&nbsp;we&nbsp;should&nbsp;test&nbsp;for&nbsp;similarity:&nbsp;x1&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;x3,&nbsp;x2&nbsp;and&nbsp;x4,&nbsp;and&nbsp;x1&nbsp;and&nbsp;x5.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Let's&nbsp;now&nbsp;revisit&nbsp;the&nbsp;question&nbsp;of&nbsp;what&nbsp;probabilities&nbsp;to&nbsp;associate&nbsp;with<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;collisions&nbsp;for&nbsp;similar&nbsp;and&nbsp;dissimilar&nbsp;pairs&nbsp;of&nbsp;samples&nbsp;through&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;AND-OR&nbsp;construction&nbsp;shown&nbsp;above.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;p1&nbsp;is&nbsp;the&nbsp;probability&nbsp;that&nbsp;two&nbsp;similar&nbsp;samples&nbsp;would&nbsp;be&nbsp;placed&nbsp;in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;same&nbsp;bucket&nbsp;by&nbsp;the&nbsp;basic&nbsp;hash&nbsp;function&nbsp;used,&nbsp;the&nbsp;probability&nbsp;that&nbsp;r<br>
+&nbsp;&nbsp;&nbsp;&nbsp;such&nbsp;functions&nbsp;would&nbsp;do&nbsp;the&nbsp;same&nbsp;in&nbsp;an&nbsp;AND&nbsp;aggregation&nbsp;of&nbsp;the&nbsp;hash<br>
+&nbsp;&nbsp;&nbsp;&nbsp;functions&nbsp;is&nbsp;p1^r.&nbsp;&nbsp;Along&nbsp;the&nbsp;same&nbsp;lines,&nbsp;if&nbsp;p2&nbsp;is&nbsp;the&nbsp;probability&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;basic&nbsp;hash&nbsp;function&nbsp;would&nbsp;place&nbsp;two&nbsp;dissimilar&nbsp;samples&nbsp;in&nbsp;the&nbsp;same<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bucket,&nbsp;then&nbsp;the&nbsp;probability&nbsp;of&nbsp;r&nbsp;such&nbsp;hash&nbsp;functions&nbsp;doing&nbsp;the&nbsp;same&nbsp;in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;an&nbsp;AND&nbsp;aggregation&nbsp;of&nbsp;the&nbsp;hash&nbsp;functions&nbsp;goes&nbsp;down&nbsp;to&nbsp;p2^r.&nbsp;&nbsp;So,&nbsp;with<br>
+&nbsp;&nbsp;&nbsp;&nbsp;regard&nbsp;to&nbsp;any&nbsp;single&nbsp;set&nbsp;of&nbsp;r&nbsp;hash&nbsp;functions,&nbsp;we&nbsp;have&nbsp;a&nbsp;desirable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;reduction&nbsp;in&nbsp;the&nbsp;collision&nbsp;probability&nbsp;associated&nbsp;with&nbsp;two&nbsp;dissimilar<br>
+&nbsp;&nbsp;&nbsp;&nbsp;samples,&nbsp;but,&nbsp;unfortunately,&nbsp;also&nbsp;an&nbsp;undesirable&nbsp;reduction&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;collision&nbsp;probability&nbsp;associated&nbsp;with&nbsp;two&nbsp;similar&nbsp;samples.&nbsp;&nbsp;However,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;assuming&nbsp;that&nbsp;p1&nbsp;is&nbsp;quite&nbsp;high&nbsp;to&nbsp;begin&nbsp;with,&nbsp;say&nbsp;around&nbsp;0.9,&nbsp;and&nbsp;p2&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;quite&nbsp;low&nbsp;to&nbsp;begin&nbsp;with,&nbsp;say,&nbsp;around&nbsp;0.1.&nbsp;The&nbsp;p1^r&nbsp;value&nbsp;will&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;impacted&nbsp;much&nbsp;less&nbsp;that&nbsp;the&nbsp;p2^r&nbsp;value.&nbsp;So&nbsp;if&nbsp;the&nbsp;basic&nbsp;hash&nbsp;function<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;characterized&nbsp;by&nbsp;the&nbsp;4-tuple&nbsp;(d1,&nbsp;d2,&nbsp;p1,&nbsp;p2)&nbsp;for&nbsp;its&nbsp;locality<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sensitivity,&nbsp;an&nbsp;r-wise&nbsp;AND&nbsp;aggregation&nbsp;of&nbsp;random&nbsp;variations&nbsp;on&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;basic&nbsp;hash&nbsp;function&nbsp;will&nbsp;be&nbsp;characterized&nbsp;by&nbsp;(d1,&nbsp;d2,&nbsp;p1^r,p2^r).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Let's&nbsp;now&nbsp;see&nbsp;what&nbsp;OR&nbsp;logic&nbsp;does&nbsp;to&nbsp;a&nbsp;set&nbsp;of&nbsp;random&nbsp;variants&nbsp;of&nbsp;a&nbsp;(d1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;d2,&nbsp;p1,&nbsp;p2)&nbsp;family&nbsp;of&nbsp;hash&nbsp;function.&nbsp;Let's&nbsp;say&nbsp;we&nbsp;are&nbsp;ORing&nbsp;over&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bucket&nbsp;entries&nbsp;as&nbsp;produced&nbsp;by&nbsp;a&nbsp;family&nbsp;of&nbsp;b&nbsp;hash&nbsp;functions.&nbsp;&nbsp;Since&nbsp;p1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;the&nbsp;probability&nbsp;of&nbsp;collision&nbsp;for&nbsp;similar&nbsp;samples,&nbsp;we&nbsp;can&nbsp;say&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;each&nbsp;of&nbsp;the&nbsp;b&nbsp;hash&nbsp;functions&nbsp;would&nbsp;declare&nbsp;two&nbsp;similar&nbsp;samples&nbsp;to&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dissimilar&nbsp;with&nbsp;a&nbsp;probability&nbsp;of&nbsp;(1&nbsp;-&nbsp;p1).&nbsp;&nbsp;That&nbsp;implies&nbsp;that,&nbsp;given&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;set&nbsp;of&nbsp;b&nbsp;such&nbsp;hash&nbsp;functions,&nbsp;none&nbsp;of&nbsp;them&nbsp;would&nbsp;declare&nbsp;two&nbsp;similar<br>
+&nbsp;&nbsp;&nbsp;&nbsp;samples&nbsp;to&nbsp;be&nbsp;similar&nbsp;with&nbsp;a&nbsp;probability&nbsp;of&nbsp;(1&nbsp;-&nbsp;p1)^b.&nbsp;&nbsp;Therefore,&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;probability&nbsp;that&nbsp;at&nbsp;least&nbsp;one&nbsp;of&nbsp;these&nbsp;b&nbsp;hash&nbsp;functions&nbsp;in&nbsp;an&nbsp;OR<br>
+&nbsp;&nbsp;&nbsp;&nbsp;construction&nbsp;would&nbsp;declare&nbsp;two&nbsp;similar&nbsp;samples&nbsp;to&nbsp;be&nbsp;similar&nbsp;is&nbsp;[1&nbsp;-&nbsp;(1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;p1)^b].&nbsp;&nbsp;The&nbsp;same&nbsp;logic&nbsp;tells&nbsp;us&nbsp;that&nbsp;an&nbsp;OR&nbsp;combination&nbsp;over&nbsp;b&nbsp;hash<br>
+&nbsp;&nbsp;&nbsp;&nbsp;functions&nbsp;would&nbsp;declare&nbsp;two&nbsp;dissimilar&nbsp;samples&nbsp;to&nbsp;be&nbsp;similar&nbsp;with&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;probability&nbsp;of&nbsp;[1&nbsp;-&nbsp;(1&nbsp;-&nbsp;p2)^b].&nbsp;&nbsp;Hence,&nbsp;we&nbsp;can&nbsp;characterize&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;locality&nbsp;sensitivity&nbsp;of&nbsp;a&nbsp;set&nbsp;of&nbsp;ORed&nbsp;b&nbsp;hash&nbsp;functions&nbsp;by&nbsp;the&nbsp;4-tuple<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(d1,&nbsp;d2,&nbsp;[1&nbsp;-&nbsp;(1&nbsp;-&nbsp;p1)^b],&nbsp;[1&nbsp;-&nbsp;(1&nbsp;-&nbsp;p2)^b]).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;It&nbsp;follows&nbsp;that&nbsp;if&nbsp;we&nbsp;apply&nbsp;the&nbsp;OR&nbsp;logic&nbsp;to&nbsp;b&nbsp;bands&nbsp;of&nbsp;hash&nbsp;functions,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;each&nbsp;band&nbsp;consisting&nbsp;of&nbsp;r&nbsp;hash&nbsp;function&nbsp;operating&nbsp;together<br>
+&nbsp;&nbsp;&nbsp;&nbsp;according&nbsp;to&nbsp;the&nbsp;AND&nbsp;logic,&nbsp;we&nbsp;can&nbsp;characterize&nbsp;the&nbsp;locality<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sensitivity&nbsp;of&nbsp;the&nbsp;b*r&nbsp;hash&nbsp;functions&nbsp;by&nbsp;the&nbsp;4-tuple<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(d1,&nbsp;d2,&nbsp;[1&nbsp;-&nbsp;(1&nbsp;-&nbsp;p1^r)^b],&nbsp;[1&nbsp;-&nbsp;(1&nbsp;-&nbsp;p2^r)^b]).<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;which&nbsp;we&nbsp;may&nbsp;express&nbsp;as&nbsp;(d1,&nbsp;d2,&nbsp;P1,&nbsp;P2)&nbsp;with&nbsp;P1&nbsp;=&nbsp;1&nbsp;-&nbsp;(1&nbsp;-&nbsp;p1^r)^b&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;P2&nbsp;=&nbsp;1&nbsp;-&nbsp;(1&nbsp;-&nbsp;p2^r)^b.&nbsp;&nbsp;We&nbsp;can&nbsp;think&nbsp;of&nbsp;P1&nbsp;and&nbsp;P2&nbsp;as&nbsp;our&nbsp;amplified<br>
+&nbsp;&nbsp;&nbsp;&nbsp;true-positive&nbsp;and&nbsp;false-positive&nbsp;probabilities.&nbsp;&nbsp;Given&nbsp;target&nbsp;values<br>
+&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;P1&nbsp;and&nbsp;P2,&nbsp;one&nbsp;would&nbsp;need&nbsp;to&nbsp;solve&nbsp;the&nbsp;nonlinear&nbsp;equations&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;relate&nbsp;P1&nbsp;and&nbsp;P2&nbsp;with&nbsp;b&nbsp;and&nbsp;r&nbsp;for&nbsp;the&nbsp;values&nbsp;one&nbsp;should&nbsp;use&nbsp;for&nbsp;these<br>
+&nbsp;&nbsp;&nbsp;&nbsp;two&nbsp;parameters&nbsp;in&nbsp;an&nbsp;LSH&nbsp;implementation.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;But&nbsp;what&nbsp;about&nbsp;the&nbsp;relationship&nbsp;between&nbsp;the&nbsp;distances&nbsp;d1&nbsp;and&nbsp;d2,&nbsp;on&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;one&nbsp;hand,&nbsp;and&nbsp;the&nbsp;collision&nbsp;probabilities&nbsp;p1&nbsp;and&nbsp;p2?&nbsp;&nbsp;That&nbsp;depends&nbsp;on<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;choice&nbsp;of&nbsp;the&nbsp;basic&nbsp;hash&nbsp;function.&nbsp;&nbsp;Consider&nbsp;what's&nbsp;surely&nbsp;the&nbsp;most<br>
+&nbsp;&nbsp;&nbsp;&nbsp;commonly&nbsp;used&nbsp;hash&nbsp;function&nbsp;for&nbsp;finding&nbsp;nearest&nbsp;neighbors&nbsp;in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;multi-dimensional&nbsp;numerical&nbsp;data:&nbsp;the&nbsp;hyperplane&nbsp;hash&nbsp;function.&nbsp;Let's<br>
+&nbsp;&nbsp;&nbsp;&nbsp;say&nbsp;your&nbsp;data&nbsp;consists&nbsp;of&nbsp;vectors&nbsp;in&nbsp;an&nbsp;N&nbsp;dimensional&nbsp;space.&nbsp;&nbsp;For&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hyperplane&nbsp;passing&nbsp;through&nbsp;the&nbsp;origin&nbsp;of&nbsp;the&nbsp;vector&nbsp;space,&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;orientation&nbsp;of&nbsp;the&nbsp;hyperplane&nbsp;being&nbsp;given&nbsp;by&nbsp;its&nbsp;surface&nbsp;normal,&nbsp;we&nbsp;can<br>
+&nbsp;&nbsp;&nbsp;&nbsp;measure&nbsp;the&nbsp;similarity&nbsp;two&nbsp;data&nbsp;samples&nbsp;by&nbsp;finding&nbsp;out&nbsp;whether&nbsp;or&nbsp;not<br>
+&nbsp;&nbsp;&nbsp;&nbsp;their&nbsp;projection&nbsp;on&nbsp;the&nbsp;normal&nbsp;to&nbsp;the&nbsp;hyperplane&nbsp;is&nbsp;on&nbsp;the&nbsp;same&nbsp;side&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;hyperplane.&nbsp;&nbsp;Let's&nbsp;say&nbsp;that&nbsp;the&nbsp;angle&nbsp;between&nbsp;the&nbsp;two&nbsp;data&nbsp;vectors<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;d1&nbsp;(the&nbsp;angle&nbsp;being&nbsp;measured&nbsp;in&nbsp;the&nbsp;plane&nbsp;that&nbsp;passes&nbsp;through&nbsp;both<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;vectors).&nbsp;&nbsp;We&nbsp;now&nbsp;say&nbsp;that&nbsp;for&nbsp;a&nbsp;randomly&nbsp;oriented&nbsp;hyperplane,&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;probability&nbsp;that&nbsp;the&nbsp;projections&nbsp;of&nbsp;the&nbsp;two&nbsp;data&nbsp;vectors&nbsp;on&nbsp;the&nbsp;normal<br>
+&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;the&nbsp;hyperplane&nbsp;would&nbsp;fall&nbsp;on&nbsp;the&nbsp;same&nbsp;side&nbsp;of&nbsp;the&nbsp;hyperplane&nbsp;is&nbsp;(180<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;d)&nbsp;/&nbsp;180.&nbsp;&nbsp;Obviously,&nbsp;as&nbsp;d&nbsp;approaches&nbsp;zero,&nbsp;this&nbsp;probability&nbsp;will<br>
+&nbsp;&nbsp;&nbsp;&nbsp;approach&nbsp;1,&nbsp;which&nbsp;makes&nbsp;sense&nbsp;since&nbsp;when&nbsp;d=o,&nbsp;the&nbsp;projections&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;two&nbsp;vectors&nbsp;on&nbsp;the&nbsp;surface&nbsp;normal&nbsp;will&nbsp;always&nbsp;be&nbsp;on&nbsp;the&nbsp;same&nbsp;side&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;hyperplane&nbsp;for&nbsp;all&nbsp;its&nbsp;orientations.&nbsp;&nbsp;On&nbsp;the&nbsp;other&nbsp;hand,&nbsp;when&nbsp;d<br>
+&nbsp;&nbsp;&nbsp;&nbsp;approaches&nbsp;180&nbsp;degrees,&nbsp;you&nbsp;have&nbsp;two&nbsp;data&nbsp;vectors&nbsp;that&nbsp;are&nbsp;as<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dissimilar&nbsp;as&nbsp;they&nbsp;can&nbsp;be&nbsp;and&nbsp;in&nbsp;this&nbsp;case&nbsp;their&nbsp;projections&nbsp;on&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;surface&nbsp;normal&nbsp;will&nbsp;be&nbsp;on&nbsp;the&nbsp;opposite&nbsp;sides&nbsp;of&nbsp;the&nbsp;hyperplane&nbsp;for&nbsp;all<br>
+&nbsp;&nbsp;&nbsp;&nbsp;its&nbsp;orientations.&nbsp;&nbsp;For&nbsp;a&nbsp;non-zero&nbsp;angle&nbsp;d&nbsp;between&nbsp;the&nbsp;data&nbsp;vectors,&nbsp;as<br>
+&nbsp;&nbsp;&nbsp;&nbsp;you&nbsp;consider&nbsp;hyperplanes&nbsp;with&nbsp;different&nbsp;possible&nbsp;random&nbsp;orientations<br>
+&nbsp;&nbsp;&nbsp;&nbsp;that&nbsp;vary&nbsp;from&nbsp;0&nbsp;degrees&nbsp;to&nbsp;180&nbsp;degrees&nbsp;(each&nbsp;orientation&nbsp;being&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;angle&nbsp;of&nbsp;the&nbsp;surface&nbsp;normal&nbsp;in&nbsp;the&nbsp;plane&nbsp;containing&nbsp;both&nbsp;data&nbsp;vectors),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;over&nbsp;the&nbsp;orientation&nbsp;range&nbsp;0&nbsp;through&nbsp;180-d&nbsp;degrees,&nbsp;both&nbsp;data&nbsp;vectors<br>
+&nbsp;&nbsp;&nbsp;&nbsp;would&nbsp;project&nbsp;onto&nbsp;the&nbsp;normal&nbsp;on&nbsp;the&nbsp;same&nbsp;side&nbsp;of&nbsp;the&nbsp;hyperplane.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;These&nbsp;arguments&nbsp;apply&nbsp;to&nbsp;the&nbsp;relationship&nbsp;between&nbsp;d1&nbsp;and&nbsp;p1&nbsp;and&nbsp;also&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;relationship&nbsp;between&nbsp;d2&nbsp;and&nbsp;p2.&nbsp;&nbsp;So&nbsp;we&nbsp;write:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;180&nbsp;-&nbsp;d1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p1&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;----------<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;180<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;180&nbsp;-&nbsp;d2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p2&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;----------<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;180<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;One&nbsp;can&nbsp;plug&nbsp;these&nbsp;formulas&nbsp;in&nbsp;the&nbsp;4-tuple&nbsp;sensitivity&nbsp;characterization<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(d1,&nbsp;d2,&nbsp;[1&nbsp;-&nbsp;(1&nbsp;-&nbsp;p1^r)^b],&nbsp;[1&nbsp;-&nbsp;(1&nbsp;-&nbsp;p2^r)^b]).<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;given&nbsp;the&nbsp;desired&nbsp;targets&nbsp;for&nbsp;the&nbsp;probabilities&nbsp;for&nbsp;true-positive<br>
+&nbsp;&nbsp;&nbsp;&nbsp;collisions&nbsp;and&nbsp;false-positive&nbsp;collisions,&nbsp;solve&nbsp;for&nbsp;the&nbsp;best&nbsp;values&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;use&nbsp;for&nbsp;b&nbsp;and&nbsp;r.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;For&nbsp;further&nbsp;information&nbsp;regarding&nbsp;Locality&nbsp;Sensitive&nbsp;Hash&nbsp;Functions,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;reader&nbsp;is&nbsp;referred&nbsp;to&nbsp;Chapter&nbsp;3&nbsp;of&nbsp;the&nbsp;book&nbsp;"Mining&nbsp;of&nbsp;Massive<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Datasets"&nbsp;by&nbsp;Jure&nbsp;Leskovec,&nbsp;Anand&nbsp;Rajaraman,&nbsp;and&nbsp;Jeffery&nbsp;Ullman.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;<br>
+<font size=+2 color="red">CAN&nbsp;NEAREST&nbsp;NEIGHBORS&nbsp;RETURNED&nbsp;BY&nbsp;LSH&nbsp;BE&nbsp;USED&nbsp;TO&nbsp;CLUSTER&nbsp;THE&nbsp;DATA?<br>
+</font>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Strictly&nbsp;speaking,&nbsp;the&nbsp;answer&nbsp;is&nbsp;no.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;problem&nbsp;is&nbsp;that&nbsp;the&nbsp;nearest&nbsp;neighbor&nbsp;property&nbsp;as&nbsp;calculated&nbsp;by&nbsp;LSH<br>
+&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;hyperplane&nbsp;hash&nbsp;functions&nbsp;is&nbsp;not&nbsp;transitive.&nbsp;&nbsp;Let's&nbsp;say&nbsp;that&nbsp;LSH<br>
+&nbsp;&nbsp;&nbsp;&nbsp;considers&nbsp;data&nbsp;samples&nbsp;X&nbsp;and&nbsp;Y&nbsp;to&nbsp;be&nbsp;similar&nbsp;because&nbsp;the&nbsp;algorithm&nbsp;has<br>
+&nbsp;&nbsp;&nbsp;&nbsp;placed&nbsp;them&nbsp;in&nbsp;the&nbsp;same&nbsp;bucket.&nbsp;&nbsp;And,&nbsp;again,&nbsp;let's&nbsp;say&nbsp;that&nbsp;LSH<br>
+&nbsp;&nbsp;&nbsp;&nbsp;considers&nbsp;the&nbsp;data&nbsp;samples&nbsp;Y&nbsp;and&nbsp;Z&nbsp;to&nbsp;be&nbsp;similar&nbsp;because&nbsp;the&nbsp;algorithm<br>
+&nbsp;&nbsp;&nbsp;&nbsp;has&nbsp;placed&nbsp;them&nbsp;also&nbsp;in&nbsp;the&nbsp;same&nbsp;bucket&nbsp;(this&nbsp;bucket&nbsp;being&nbsp;different<br>
+&nbsp;&nbsp;&nbsp;&nbsp;from&nbsp;the&nbsp;first&nbsp;bucket).&nbsp;&nbsp;<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;X&nbsp;being&nbsp;similar&nbsp;to&nbsp;Y&nbsp;and&nbsp;Y&nbsp;being&nbsp;similar&nbsp;to&nbsp;Z&nbsp;in&nbsp;the&nbsp;sense&nbsp;described<br>
+&nbsp;&nbsp;&nbsp;&nbsp;here&nbsp;may&nbsp;not&nbsp;always&nbsp;imply&nbsp;that&nbsp;X&nbsp;is&nbsp;similar&nbsp;to&nbsp;Z.&nbsp;&nbsp;Just&nbsp;imagine&nbsp;three<br>
+&nbsp;&nbsp;&nbsp;&nbsp;points&nbsp;on&nbsp;the&nbsp;same&nbsp;great&nbsp;circle&nbsp;on&nbsp;the&nbsp;surface&nbsp;of&nbsp;a&nbsp;sphere.&nbsp;&nbsp;The<br>
+&nbsp;&nbsp;&nbsp;&nbsp;angular&nbsp;interval&nbsp;between&nbsp;X&nbsp;and&nbsp;Y,&nbsp;on&nbsp;the&nbsp;one&nbsp;hand,&nbsp;and&nbsp;between&nbsp;Y&nbsp;and&nbsp;Z,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;on&nbsp;the&nbsp;other,&nbsp;could&nbsp;be&nbsp;sufficiently&nbsp;small&nbsp;so&nbsp;that&nbsp;X&nbsp;and&nbsp;Y&nbsp;would&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;considered&nbsp;similar&nbsp;and&nbsp;Y&nbsp;and&nbsp;Z&nbsp;would&nbsp;be&nbsp;considered&nbsp;similar&nbsp;also.&nbsp;&nbsp;Yet,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;angular&nbsp;interval&nbsp;between&nbsp;X&nbsp;and&nbsp;Z&nbsp;may&nbsp;exceed&nbsp;the&nbsp;threshold&nbsp;test&nbsp;for<br>
+&nbsp;&nbsp;&nbsp;&nbsp;similarity.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Despite&nbsp;the&nbsp;difficulty&nbsp;created&nbsp;by&nbsp;the&nbsp;non-transitivity&nbsp;of&nbsp;angle-based<br>
+&nbsp;&nbsp;&nbsp;&nbsp;measures&nbsp;of&nbsp;similarity&nbsp;between&nbsp;any&nbsp;two&nbsp;data&nbsp;samples,&nbsp;it&nbsp;may&nbsp;be&nbsp;possible<br>
+&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;get&nbsp;good&nbsp;clustering&nbsp;results&nbsp;if&nbsp;the&nbsp;data&nbsp;is&nbsp;known&nbsp;to&nbsp;reside&nbsp;in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;non-overlapping&nbsp;clusters&nbsp;in&nbsp;the&nbsp;vector&nbsp;space.&nbsp;Although&nbsp;such&nbsp;a&nbsp;property<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;not&nbsp;likely&nbsp;to&nbsp;be&nbsp;true&nbsp;for&nbsp;most&nbsp;practical&nbsp;applications,&nbsp;modifications<br>
+&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;logic&nbsp;presented&nbsp;in&nbsp;this&nbsp;module&nbsp;may&nbsp;provide&nbsp;acceptable&nbsp;results<br>
+&nbsp;&nbsp;&nbsp;&nbsp;when&nbsp;the&nbsp;data&nbsp;clusters&nbsp;are&nbsp;somewhat&nbsp;overlapping.&nbsp;&nbsp;Consider,&nbsp;for<br>
+&nbsp;&nbsp;&nbsp;&nbsp;example,&nbsp;the&nbsp;notion&nbsp;used&nbsp;in&nbsp;this&nbsp;module&nbsp;that&nbsp;two&nbsp;neighborhoods&nbsp;returned<br>
+&nbsp;&nbsp;&nbsp;&nbsp;by&nbsp;LSH&nbsp;can&nbsp;be&nbsp;clustered&nbsp;together&nbsp;if&nbsp;they&nbsp;share&nbsp;data&nbsp;samples.&nbsp;&nbsp;We&nbsp;could<br>
+&nbsp;&nbsp;&nbsp;&nbsp;additionally&nbsp;predicate&nbsp;the&nbsp;joining&nbsp;of&nbsp;such&nbsp;neighborhoods&nbsp;on&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;distance&nbsp;between&nbsp;their&nbsp;means,&nbsp;or&nbsp;the&nbsp;distance&nbsp;between&nbsp;the&nbsp;shared&nbsp;data<br>
+&nbsp;&nbsp;&nbsp;&nbsp;samples&nbsp;and&nbsp;the&nbsp;means&nbsp;of&nbsp;the&nbsp;two&nbsp;neighborhoods,&nbsp;with&nbsp;the&nbsp;idea&nbsp;that&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;shared&nbsp;data&nbsp;samples&nbsp;closer&nbsp;to&nbsp;the&nbsp;respective&nbsp;means&nbsp;in&nbsp;each&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;neighborhoods&nbsp;are&nbsp;to&nbsp;be&nbsp;trusted&nbsp;more&nbsp;with&nbsp;regard&nbsp;to&nbsp;the&nbsp;two<br>
+&nbsp;&nbsp;&nbsp;&nbsp;neighborhoods&nbsp;belonging&nbsp;to&nbsp;the&nbsp;same&nbsp;cluster.&nbsp;&nbsp;This&nbsp;additional&nbsp;logic&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;not&nbsp;yet&nbsp;in&nbsp;the&nbsp;module.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Think&nbsp;of&nbsp;this&nbsp;module&nbsp;as&nbsp;just&nbsp;a&nbsp;first&nbsp;step&nbsp;in&nbsp;the&nbsp;direction&nbsp;of&nbsp;exploring<br>
+&nbsp;&nbsp;&nbsp;&nbsp;how&nbsp;one&nbsp;might&nbsp;exploit&nbsp;the&nbsp;neighborhood&nbsp;information&nbsp;returned&nbsp;by&nbsp;LSH&nbsp;in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;forming&nbsp;similarity&nbsp;clusters&nbsp;in&nbsp;data.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;<br>
+<font size=+2 color="red">USAGE:<br>
+</font>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;you&nbsp;want&nbsp;to&nbsp;find&nbsp;just&nbsp;the&nbsp;nearest&nbsp;neighbors&nbsp;of&nbsp;a&nbsp;given&nbsp;data&nbsp;sample<br>
+&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;a&nbsp;datafile&nbsp;that&nbsp;was&nbsp;processed&nbsp;by&nbsp;this&nbsp;module,&nbsp;your&nbsp;usage&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;module&nbsp;will&nbsp;look&nbsp;like:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lsh&nbsp;=&nbsp;<a href="#LocalitySensitiveHashing">LocalitySensitiveHashing</a>(&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;datafile&nbsp;=&nbsp;"data_for_lsh.csv",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dim&nbsp;=&nbsp;10,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;r&nbsp;=&nbsp;50,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b&nbsp;=&nbsp;100,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lsh.get_data_from_csv()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lsh.initialize_hash_store()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lsh.hash_all_data()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;similarity_neighborhoods&nbsp;=&nbsp;lsh.lsh_basic_for_nearest_neighbors()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;where&nbsp;'dim'&nbsp;is&nbsp;the&nbsp;dimensionality&nbsp;of&nbsp;the&nbsp;numerical&nbsp;data&nbsp;in&nbsp;the&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;that&nbsp;in&nbsp;the&nbsp;above&nbsp;example&nbsp;is&nbsp;named&nbsp;"data_for_lsh.csv".&nbsp;&nbsp;The&nbsp;datafile<br>
+&nbsp;&nbsp;&nbsp;&nbsp;must&nbsp;be&nbsp;in&nbsp;the&nbsp;CSV&nbsp;format.&nbsp;(See&nbsp;the&nbsp;Examples&nbsp;directory&nbsp;for&nbsp;what&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;datafile&nbsp;must&nbsp;look&nbsp;like.)&nbsp;&nbsp;The&nbsp;parameter&nbsp;'r'&nbsp;is&nbsp;the&nbsp;number&nbsp;of&nbsp;rows&nbsp;for<br>
+&nbsp;&nbsp;&nbsp;&nbsp;r-wise&nbsp;AND&nbsp;in&nbsp;each&nbsp;band&nbsp;of&nbsp;the&nbsp;hash&nbsp;functions,&nbsp;and&nbsp;the&nbsp;paramter&nbsp;'b'&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;number&nbsp;of&nbsp;bands&nbsp;for&nbsp;b-wise&nbsp;OR&nbsp;over&nbsp;all&nbsp;the&nbsp;bands.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;On&nbsp;the&nbsp;other&nbsp;hand,&nbsp;if&nbsp;you&nbsp;want&nbsp;to&nbsp;use&nbsp;this&nbsp;module&nbsp;for&nbsp;clustering&nbsp;your<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;using&nbsp;LSH&nbsp;for&nbsp;discovering&nbsp;the&nbsp;neighbors&nbsp;of&nbsp;the&nbsp;individual&nbsp;data<br>
+&nbsp;&nbsp;&nbsp;&nbsp;samples,&nbsp;your&nbsp;usage&nbsp;of&nbsp;the&nbsp;module&nbsp;will&nbsp;look&nbsp;like:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lsh&nbsp;=&nbsp;<a href="#LocalitySensitiveHashing">LocalitySensitiveHashing</a>(&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;datafile&nbsp;=&nbsp;"data_for_lsh.csv",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dim&nbsp;=&nbsp;10,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;r&nbsp;=&nbsp;50,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b&nbsp;=&nbsp;100,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;expected_num_of_clusters&nbsp;=&nbsp;10,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lsh.get_data_from_csv()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lsh.initialize_hash_store()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lsh.hash_all_data()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;similarity_groups&nbsp;=&nbsp;lsh.lsh_basic_for_neighborhood_clusters()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coalesced_similarity_groups&nbsp;=&nbsp;lsh.merge_similarity_groups_with_coalescence(&nbsp;similarity_groups&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;merged_similarity_groups&nbsp;=&nbsp;lsh.merge_similarity_groups_with_l2norm_sample_based(&nbsp;coalesced_similarity_groups&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lsh.write_clusters_to_file(&nbsp;merged_similarity_groups,&nbsp;"clusters.txt"&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;where&nbsp;the&nbsp;constructor&nbsp;parameters&nbsp;'dim',&nbsp;'r',&nbsp;and&nbsp;'b'&nbsp;carry&nbsp;the&nbsp;same<br>
+&nbsp;&nbsp;&nbsp;meaning&nbsp;as&nbsp;mentioned&nbsp;for&nbsp;the&nbsp;previous&nbsp;case.&nbsp;&nbsp;The&nbsp;new&nbsp;constructor<br>
+&nbsp;&nbsp;&nbsp;parameter&nbsp;'expected_num_of_clusters'&nbsp;specifies&nbsp;how&nbsp;many&nbsp;clusters&nbsp;you<br>
+&nbsp;&nbsp;&nbsp;expect&nbsp;to&nbsp;see&nbsp;in&nbsp;the&nbsp;data.&nbsp;&nbsp;The&nbsp;last&nbsp;four&nbsp;statements&nbsp;are&nbsp;about<br>
+&nbsp;&nbsp;&nbsp;constructing&nbsp;clusters&nbsp;from&nbsp;the&nbsp;neighborhoods&nbsp;returned&nbsp;by&nbsp;LSH.&nbsp;&nbsp;Their<br>
+&nbsp;&nbsp;&nbsp;roles&nbsp;are&nbsp;explained&nbsp;elsewhere&nbsp;on&nbsp;this&nbsp;documentation&nbsp;page.&nbsp;&nbsp;The&nbsp;next&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;the&nbsp;last&nbsp;statement&nbsp;shown&nbsp;above&nbsp;first&nbsp;orders&nbsp;the&nbsp;clusters&nbsp;formed<br>
+&nbsp;&nbsp;&nbsp;according&nbsp;to&nbsp;their&nbsp;size.&nbsp;&nbsp;It&nbsp;then&nbsp;retains&nbsp;a&nbsp;certain&nbsp;number&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;largest&nbsp;clusters,&nbsp;the&nbsp;number&nbsp;being&nbsp;as&nbsp;specified&nbsp;by&nbsp;the&nbsp;constructor<br>
+&nbsp;&nbsp;&nbsp;parameter&nbsp;expected_num_of_clusters.&nbsp;&nbsp;The&nbsp;samples&nbsp;in&nbsp;the&nbsp;excess&nbsp;clusters<br>
+&nbsp;&nbsp;&nbsp;are&nbsp;then&nbsp;pooled&nbsp;together&nbsp;and&nbsp;each&nbsp;sample&nbsp;in&nbsp;the&nbsp;pool&nbsp;assigned&nbsp;to&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;closest&nbsp;retained&nbsp;cluster.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;In&nbsp;the&nbsp;usage&nbsp;example&nbsp;shown&nbsp;above&nbsp;for&nbsp;clustering&nbsp;the&nbsp;data,&nbsp;you&nbsp;can<br>
+&nbsp;&nbsp;&nbsp;replace&nbsp;the&nbsp;call&nbsp;in&nbsp;the&nbsp;next&nbsp;to&nbsp;the&nbsp;last&nbsp;statement&nbsp;by<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;merged_similarity_groups&nbsp;=&nbsp;lsh.merge_similarity_groups_with_l2norm_set_based(&nbsp;coalesced_similarity_groups&nbsp;)<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;This&nbsp;invokes&nbsp;a&nbsp;set&nbsp;based&nbsp;approach&nbsp;to&nbsp;merging&nbsp;the&nbsp;excess&nbsp;clusters&nbsp;with<br>
+&nbsp;&nbsp;&nbsp;the&nbsp;retained&nbsp;clusters.&nbsp;&nbsp;In&nbsp;the&nbsp;set&nbsp;based&nbsp;approach,&nbsp;you&nbsp;find&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;difference&nbsp;between&nbsp;the&nbsp;means&nbsp;of&nbsp;the&nbsp;excess&nbsp;clusters&nbsp;and&nbsp;the&nbsp;retained<br>
+&nbsp;&nbsp;&nbsp;clusters.&nbsp;&nbsp;An&nbsp;excess&nbsp;cluster&nbsp;is&nbsp;merged&nbsp;with&nbsp;a&nbsp;retained&nbsp;cluster&nbsp;if&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;difference&nbsp;between&nbsp;the&nbsp;means&nbsp;of&nbsp;the&nbsp;two&nbsp;is&nbsp;the&nbsp;least.<br>
+&nbsp;<br>
+&nbsp;<br>
+<font size=+2 color="red">CONSTRUCTOR&nbsp;PARAMETERS:<br>
+</font>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;datafile:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Must&nbsp;be&nbsp;a&nbsp;".csv"&nbsp;file.&nbsp;&nbsp;Each&nbsp;record&nbsp;in&nbsp;this&nbsp;file&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;corresponds&nbsp;one&nbsp;data&nbsp;point&nbsp;in&nbsp;a&nbsp;vector&nbsp;space.&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Each&nbsp;record&nbsp;must&nbsp;have&nbsp;associated&nbsp;with&nbsp;it&nbsp;a&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unique&nbsp;symbolic&nbsp;name&nbsp;that&nbsp;must&nbsp;be&nbsp;in&nbsp;the&nbsp;first<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;column.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dim:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Is&nbsp;set&nbsp;to&nbsp;the&nbsp;dimensionality&nbsp;of&nbsp;the&nbsp;vector&nbsp;space<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;which&nbsp;the&nbsp;data&nbsp;is&nbsp;defined.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;r:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;number&nbsp;of&nbsp;rows&nbsp;in&nbsp;each&nbsp;band&nbsp;of&nbsp;the&nbsp;hash&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;functions.&nbsp;&nbsp;An&nbsp;r-wise&nbsp;AND&nbsp;operator&nbsp;is&nbsp;applied&nbsp;to&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;buckets&nbsp;in&nbsp;each&nbsp;such&nbsp;band.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;b:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;number&nbsp;of&nbsp;r-row&nbsp;bands&nbsp;of&nbsp;the&nbsp;hash&nbsp;functions.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;b-wise&nbsp;OR&nbsp;operator&nbsp;is&nbsp;applied&nbsp;to&nbsp;the&nbsp;buckets&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;that&nbsp;correspond&nbsp;to&nbsp;each&nbsp;of&nbsp;the&nbsp;bands.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;expected_num_of_clusters:&nbsp;&nbsp;This&nbsp;tell&nbsp;the&nbsp;module&nbsp;how&nbsp;many&nbsp;clusters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;you&nbsp;expect&nbsp;to&nbsp;see&nbsp;in&nbsp;your&nbsp;datafile.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<font size=+2 color="red">METHODS:<br>
+</font>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(1)&nbsp;&nbsp;display_contents_of_all_hash_bins_pre_lsh()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;As&nbsp;mentioned&nbsp;elsewhere&nbsp;in&nbsp;this&nbsp;documentation&nbsp;page,&nbsp;each&nbsp;data<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sample&nbsp;is&nbsp;hashed&nbsp;by&nbsp;a&nbsp;randomly&nbsp;oriented&nbsp;hyperplane&nbsp;(passing<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;through&nbsp;the&nbsp;origin&nbsp;of&nbsp;the&nbsp;vector&nbsp;space&nbsp;in&nbsp;which&nbsp;the&nbsp;data&nbsp;resides)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;by&nbsp;projecting&nbsp;the&nbsp;sample&nbsp;on&nbsp;the&nbsp;normal&nbsp;to&nbsp;the&nbsp;hyperplane.&nbsp;This<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;creates&nbsp;a&nbsp;two-bin&nbsp;hash&nbsp;table,&nbsp;with&nbsp;some&nbsp;samples&nbsp;projected&nbsp;into&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;positive&nbsp;half-space&nbsp;and&nbsp;the&nbsp;others&nbsp;into&nbsp;the&nbsp;negative&nbsp;half-space.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;method&nbsp;displays&nbsp;the&nbsp;orientation&nbsp;of&nbsp;the&nbsp;hyperplane,&nbsp;along&nbsp;with<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;two&nbsp;lists,&nbsp;one&nbsp;consisting&nbsp;of&nbsp;the&nbsp;sample&nbsp;names&nbsp;that&nbsp;projected&nbsp;into<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;positive&nbsp;half-space&nbsp;and&nbsp;the&nbsp;other&nbsp;consisting&nbsp;of&nbsp;the&nbsp;sample<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;names&nbsp;that&nbsp;projected&nbsp;into&nbsp;the&nbsp;negative&nbsp;half-space.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(2)&nbsp;&nbsp;evaluate_quality_of_similarity_groups(&nbsp;merged_similarity_groups&nbsp;)<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;the&nbsp;symbolic&nbsp;names&nbsp;in&nbsp;your&nbsp;datafile&nbsp;are&nbsp;based&nbsp;on&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"sampleX_Y"&nbsp;format,&nbsp;where&nbsp;X&nbsp;is&nbsp;the&nbsp;integer&nbsp;ID&nbsp;of&nbsp;a&nbsp;cluster&nbsp;and&nbsp;Y<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;integer&nbsp;ID&nbsp;of&nbsp;a&nbsp;data&nbsp;element&nbsp;in&nbsp;the&nbsp;cluster,&nbsp;you&nbsp;can&nbsp;call&nbsp;on<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;method&nbsp;to&nbsp;evaluate&nbsp;the&nbsp;quality&nbsp;of&nbsp;the&nbsp;clusters&nbsp;produced&nbsp;by<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;LSH&nbsp;module.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(3)&nbsp;&nbsp;get_data_from_csv()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;method&nbsp;extracts&nbsp;the&nbsp;numerical&nbsp;data&nbsp;from&nbsp;your&nbsp;CSV&nbsp;file.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(4)&nbsp;&nbsp;hash_all_data()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It&nbsp;is&nbsp;this&nbsp;method&nbsp;that&nbsp;hashes&nbsp;all&nbsp;of&nbsp;your&nbsp;data&nbsp;records&nbsp;in&nbsp;the&nbsp;CSV<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file&nbsp;with&nbsp;r&nbsp;*&nbsp;b&nbsp;number&nbsp;of&nbsp;hash&nbsp;functions,&nbsp;each&nbsp;hash&nbsp;function&nbsp;being<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;randomly&nbsp;oriented&nbsp;hyperplane&nbsp;passing&nbsp;through&nbsp;the&nbsp;origin&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vector&nbsp;space&nbsp;in&nbsp;which&nbsp;the&nbsp;data&nbsp;resides.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(5)&nbsp;&nbsp;initialize_hash_store()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;method&nbsp;must&nbsp;be&nbsp;called&nbsp;before&nbsp;the&nbsp;'hash_all_data()'&nbsp;method.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;initialization&nbsp;consists&nbsp;of&nbsp;generating&nbsp;the&nbsp;desired&nbsp;number&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hyperplane&nbsp;orientations&nbsp;randomly&nbsp;and&nbsp;associating&nbsp;with&nbsp;each<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;orientation&nbsp;a&nbsp;two-bin&nbsp;hash&nbsp;table&nbsp;in&nbsp;the&nbsp;form&nbsp;of&nbsp;a&nbsp;dictionary&nbsp;with<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;two&nbsp;&lt;key,value&gt;&nbsp;pairs&nbsp;in&nbsp;it&nbsp;for&nbsp;the&nbsp;keys&nbsp;'plus'&nbsp;and&nbsp;'minus',&nbsp;with<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'plus'&nbsp;standing&nbsp;for&nbsp;the&nbsp;positive&nbsp;half-space&nbsp;and&nbsp;'minus'&nbsp;for&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;negative&nbsp;half-space&nbsp;for&nbsp;each&nbsp;hyperplane.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(6)&nbsp;&nbsp;lsh_basic_for_nearest_neighbors()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;method&nbsp;is&nbsp;this&nbsp;module's&nbsp;implementation&nbsp;of&nbsp;the&nbsp;hyperplane<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;based&nbsp;LSH&nbsp;algorithm.&nbsp;&nbsp;This&nbsp;method's&nbsp;mandate&nbsp;is&nbsp;what&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traditionally&nbsp;accomplished&nbsp;with&nbsp;LSH&nbsp;---&nbsp;finding&nbsp;nearest&nbsp;neighbors<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;data&nbsp;elements.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(7)&nbsp;&nbsp;lsh_basic_for_neighborhood_clusters()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;method&nbsp;is&nbsp;a&nbsp;slight&nbsp;variation&nbsp;on&nbsp;the&nbsp;previous&nbsp;method,&nbsp;in&nbsp;that,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;instead&nbsp;of&nbsp;returning&nbsp;the&nbsp;nearest&nbsp;neighbors&nbsp;of&nbsp;a&nbsp;data&nbsp;element,&nbsp;it<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;merges&nbsp;the&nbsp;data&nbsp;element&nbsp;with&nbsp;its&nbsp;LSH-discovered&nbsp;neighbors&nbsp;to&nbsp;form<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;cluster.&nbsp;&nbsp;The&nbsp;method&nbsp;returns&nbsp;a&nbsp;list&nbsp;of&nbsp;such&nbsp;clusters.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(8)&nbsp;&nbsp;merge_similarity_groups_with_coalescence()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;is&nbsp;where&nbsp;we&nbsp;violate&nbsp;the&nbsp;traditional&nbsp;mandate&nbsp;of&nbsp;the&nbsp;LSH<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;algorithm&nbsp;---&nbsp;so&nbsp;use&nbsp;it&nbsp;with&nbsp;care.&nbsp;&nbsp;Make&nbsp;doubly&nbsp;sure&nbsp;that&nbsp;this&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;other&nbsp;similar&nbsp;methods&nbsp;are&nbsp;appropriate&nbsp;for&nbsp;your&nbsp;data.&nbsp;&nbsp;This&nbsp;method<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;merges&nbsp;together&nbsp;those&nbsp;clusters&nbsp;produced&nbsp;by&nbsp;the&nbsp;previous&nbsp;method&nbsp;if<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;they&nbsp;share&nbsp;any&nbsp;data&nbsp;elements.&nbsp;&nbsp;As&nbsp;you&nbsp;can&nbsp;well&nbsp;imagine,&nbsp;if&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;is&nbsp;noisy&nbsp;and&nbsp;the&nbsp;clusters&nbsp;in&nbsp;the&nbsp;data&nbsp;are&nbsp;overlapping,&nbsp;this<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;method&nbsp;may&nbsp;cluster&nbsp;all&nbsp;of&nbsp;your&nbsp;data&nbsp;into&nbsp;a&nbsp;single&nbsp;large&nbsp;cluster.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(9)&nbsp;&nbsp;merge_similarity_groups_with_l2norm_sample_based()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;sign&nbsp;of&nbsp;the&nbsp;coalescence&nbsp;step&nbsp;in&nbsp;the&nbsp;previous&nbsp;method&nbsp;working<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reasonably&nbsp;well&nbsp;is&nbsp;that&nbsp;the&nbsp;number&nbsp;of&nbsp;clusters&nbsp;produced&nbsp;by&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;previous&nbsp;method&nbsp;will&nbsp;be&nbsp;larger&nbsp;than&nbsp;the&nbsp;number&nbsp;of&nbsp;clusters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;actually&nbsp;present&nbsp;in&nbsp;the&nbsp;data.&nbsp;&nbsp;If&nbsp;that&nbsp;is&nbsp;the&nbsp;case,&nbsp;you&nbsp;can&nbsp;use<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;method&nbsp;to&nbsp;merge&nbsp;the&nbsp;excess&nbsp;clusters&nbsp;with&nbsp;those&nbsp;that&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;retained.&nbsp;&nbsp;This&nbsp;method&nbsp;first&nbsp;orders&nbsp;by&nbsp;size&nbsp;the&nbsp;clusters&nbsp;produced<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;by&nbsp;the&nbsp;previous&nbsp;method.&nbsp;&nbsp;Subsequently,&nbsp;it&nbsp;pools&nbsp;together&nbsp;all&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;samples&nbsp;in&nbsp;the&nbsp;excess&nbsp;clusters.&nbsp;&nbsp;Each&nbsp;sample&nbsp;in&nbsp;this&nbsp;pool&nbsp;is&nbsp;then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;merged&nbsp;with&nbsp;one&nbsp;of&nbsp;the&nbsp;retained&nbsp;clusters&nbsp;on&nbsp;the&nbsp;basis&nbsp;of&nbsp;the&nbsp;least<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;distance&nbsp;between&nbsp;the&nbsp;sample&nbsp;and&nbsp;cluster&nbsp;mean.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(10)&nbsp;merge_similarity_groups_with_l2norm_set_based()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;contract&nbsp;of&nbsp;this&nbsp;method&nbsp;is&nbsp;the&nbsp;same&nbsp;as&nbsp;that&nbsp;of&nbsp;the&nbsp;previous<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;method,&nbsp;except&nbsp;for&nbsp;the&nbsp;difference&nbsp;that&nbsp;the&nbsp;excess&nbsp;clusters&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;merged&nbsp;wholesale&nbsp;with&nbsp;the&nbsp;retained&nbsp;clusters.&nbsp;&nbsp;The&nbsp;methods&nbsp;computes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;difference&nbsp;in&nbsp;the&nbsp;mean&nbsp;vectors&nbsp;between&nbsp;a&nbsp;given&nbsp;excess&nbsp;cluster<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;each&nbsp;of&nbsp;the&nbsp;retained&nbsp;clusters.&nbsp;An&nbsp;excess&nbsp;cluster&nbsp;is&nbsp;merged<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;the&nbsp;nearest&nbsp;retained&nbsp;cluster&nbsp;on&nbsp;the&nbsp;basis&nbsp;of&nbsp;this&nbsp;difference<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;the&nbsp;means&nbsp;of&nbsp;the&nbsp;two&nbsp;being&nbsp;the&nbsp;smallest.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(11)&nbsp;prune_similarity_groups(self):<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;the&nbsp;module&nbsp;is&nbsp;producing&nbsp;too&nbsp;many&nbsp;small&nbsp;clusters&nbsp;and&nbsp;you&nbsp;don't<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;see&nbsp;any&nbsp;value&nbsp;in&nbsp;retaining&nbsp;them,&nbsp;you&nbsp;can&nbsp;call&nbsp;on&nbsp;this&nbsp;method&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;rid&nbsp;of&nbsp;them.&nbsp;&nbsp;In&nbsp;order&nbsp;to&nbsp;use&nbsp;this&nbsp;method,&nbsp;you&nbsp;must&nbsp;first&nbsp;set<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;constructor&nbsp;parameter&nbsp;'similarity_group_min_size_threshold'&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;minimum&nbsp;cluster&nbsp;size&nbsp;you&nbsp;want.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(12)&nbsp;show_data_for_lsh()<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For&nbsp;the&nbsp;purpose&nbsp;of&nbsp;verification,&nbsp;this&nbsp;method&nbsp;shows&nbsp;you&nbsp;what&nbsp;data<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;was&nbsp;extracted&nbsp;from&nbsp;the&nbsp;CSV&nbsp;file.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(13)&nbsp;write_clusters_to_file()&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You&nbsp;can&nbsp;call&nbsp;on&nbsp;this&nbsp;method&nbsp;to&nbsp;write&nbsp;the&nbsp;clusters&nbsp;out&nbsp;to&nbsp;a&nbsp;disk<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file.&nbsp;&nbsp;The&nbsp;method&nbsp;takes&nbsp;two&nbsp;arguments,&nbsp;the&nbsp;first&nbsp;for&nbsp;the&nbsp;list&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clusters&nbsp;returned&nbsp;by&nbsp;any&nbsp;of&nbsp;the&nbsp;methods&nbsp;in&nbsp;items&nbsp;(8),&nbsp;(9),&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(10)&nbsp;above,&nbsp;and&nbsp;the&nbsp;second&nbsp;for&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;disk&nbsp;file.<br>
+&nbsp;<br>
+<font size=+2 color="red">The&nbsp;<a href="#DataGenerator">DataGenerator</a>&nbsp;CLASS:<br>
+</font>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;module&nbsp;comes&nbsp;equipped&nbsp;with&nbsp;a&nbsp;<a href="#DataGenerator">DataGenerator</a>&nbsp;class&nbsp;that&nbsp;you&nbsp;can&nbsp;use<br>
+&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;generate&nbsp;multi-class&nbsp;multi-variate&nbsp;data&nbsp;for&nbsp;experimenting&nbsp;with&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;LSH&nbsp;module.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;<a href="#DataGenerator">DataGenerator</a>&nbsp;class&nbsp;is&nbsp;programmed&nbsp;to&nbsp;generate&nbsp;N&nbsp;"balls"&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;multi-variate&nbsp;Gaussian&nbsp;data,&nbsp;where&nbsp;N&nbsp;is&nbsp;the&nbsp;value&nbsp;for&nbsp;the&nbsp;parameter<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'how_many_similarity_groups'&nbsp;shown&nbsp;in&nbsp;the&nbsp;constructor&nbsp;call<br>
+&nbsp;&nbsp;&nbsp;&nbsp;below.&nbsp;Consider&nbsp;an&nbsp;N&nbsp;dimensional&nbsp;cube&nbsp;in&nbsp;the&nbsp;positive&nbsp;quadrant&nbsp;of&nbsp;an<br>
+&nbsp;&nbsp;&nbsp;&nbsp;N-dimensional&nbsp;space.&nbsp;&nbsp;Such&nbsp;a&nbsp;cube&nbsp;has&nbsp;2^N&nbsp;vertices.&nbsp;The&nbsp;N&nbsp;Gaussian<br>
+&nbsp;&nbsp;&nbsp;&nbsp;balls&nbsp;are&nbsp;centered&nbsp;at&nbsp;the&nbsp;N&nbsp;vertices&nbsp;of&nbsp;the&nbsp;cube&nbsp;that&nbsp;are&nbsp;closest&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;origin.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;import&nbsp;<a href="#LocalitySensitiveHashing">LocalitySensitiveHashing</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dim&nbsp;=&nbsp;10<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;covar&nbsp;=&nbsp;numpy.diag([0.01]&nbsp;*&nbsp;dim)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;output_file&nbsp;=&nbsp;'data_for_lsh.csv'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data_gen&nbsp;=&nbsp;<a href="#DataGenerator">DataGenerator</a>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;output_csv_file&nbsp;&nbsp;&nbsp;=&nbsp;output_file,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;how_many_similarity_groups&nbsp;=&nbsp;10,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dim&nbsp;=&nbsp;dim,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;number_of_samples_per_group&nbsp;=&nbsp;8,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;covariance&nbsp;=&nbsp;covar,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data_gen.gen_data_and_write_to_csv()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;<br>
+<font size=+2 color="red">THE&nbsp;EXAMPLES&nbsp;DIRECTORY:<br>
+</font>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;best&nbsp;way&nbsp;to&nbsp;become&nbsp;familiar&nbsp;with&nbsp;this&nbsp;module&nbsp;is&nbsp;by&nbsp;executing&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;following&nbsp;scripts&nbsp;in&nbsp;the&nbsp;Examples&nbsp;subdirectory:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1.&nbsp;&nbsp;LSH_basic_for_demonstrating_nearest_neighbors.py<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;script&nbsp;demonstrates&nbsp;the&nbsp;functionality&nbsp;one&nbsp;traditionally<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;associates&nbsp;with&nbsp;the&nbsp;LSH&nbsp;algorithm&nbsp;---&nbsp;finding&nbsp;nearest<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;neighbors.&nbsp;&nbsp;This&nbsp;script&nbsp;places&nbsp;the&nbsp;user&nbsp;in&nbsp;an&nbsp;interactive<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;session&nbsp;in&nbsp;which&nbsp;the&nbsp;user&nbsp;is&nbsp;asked&nbsp;to&nbsp;enter&nbsp;the&nbsp;symbolic&nbsp;name<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;a&nbsp;data&nbsp;record&nbsp;in&nbsp;the&nbsp;datafile&nbsp;that&nbsp;was&nbsp;processed&nbsp;by&nbsp;the&nbsp;LSH<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;algorithm.&nbsp;&nbsp;Subsequently,&nbsp;the&nbsp;user&nbsp;is&nbsp;shown&nbsp;the&nbsp;nearest<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;neighbors&nbsp;of&nbsp;that&nbsp;record.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;2.&nbsp;&nbsp;Clustering_with_LSH_with_sample_based_merging.py<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;is&nbsp;one&nbsp;of&nbsp;the&nbsp;two&nbsp;scripts&nbsp;in&nbsp;the&nbsp;Examples&nbsp;directory&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;attempt&nbsp;to&nbsp;cluster&nbsp;the&nbsp;data&nbsp;that&nbsp;is&nbsp;supplied&nbsp;to&nbsp;the&nbsp;module<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;through&nbsp;a&nbsp;CSV&nbsp;file.&nbsp;The&nbsp;data&nbsp;is&nbsp;clustered&nbsp;on&nbsp;the&nbsp;basis&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;neighborhoods&nbsp;supplied&nbsp;by&nbsp;the&nbsp;LSH&nbsp;algorithm.&nbsp;&nbsp;If&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coalescence&nbsp;of&nbsp;the&nbsp;LSH&nbsp;generated&nbsp;neighborhood&nbsp;creates&nbsp;more<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cluster&nbsp;than&nbsp;expected,&nbsp;this&nbsp;script&nbsp;calls&nbsp;on&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;merge_similarity_groups_with_l2norm_sample_based()&nbsp;to&nbsp;merge<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;excess&nbsp;small&nbsp;clusters&nbsp;with&nbsp;the&nbsp;main&nbsp;retained&nbsp;clusters.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;3.&nbsp;&nbsp;Clustering_with_LSH_with_set_based_merging.py<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;is&nbsp;the&nbsp;second&nbsp;of&nbsp;the&nbsp;cluster&nbsp;producing&nbsp;scripts&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Examples&nbsp;directory.&nbsp;&nbsp;Again,&nbsp;the&nbsp;starting&nbsp;points&nbsp;for&nbsp;forming&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clusters&nbsp;are&nbsp;the&nbsp;neighborhoods&nbsp;supplied&nbsp;by&nbsp;the&nbsp;LSH&nbsp;algorithm.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Unlike&nbsp;the&nbsp;previous&nbsp;script,&nbsp;this&nbsp;script&nbsp;calls&nbsp;on&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;merge_similarity_groups_with_l2norm_set_based()&nbsp;to&nbsp;merge&nbsp;excess<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;small&nbsp;clusters&nbsp;with&nbsp;the&nbsp;main&nbsp;retained&nbsp;clusters.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;4.&nbsp;&nbsp;gen_data.py<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;script&nbsp;uses&nbsp;the&nbsp;<a href="#DataGenerator">DataGenerator</a>&nbsp;class&nbsp;that&nbsp;comes&nbsp;with&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LSH&nbsp;module&nbsp;to&nbsp;generate&nbsp;multi-variate&nbsp;Gaussian&nbsp;data&nbsp;for<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;experimenting&nbsp;with&nbsp;the&nbsp;LSH&nbsp;module.&nbsp;&nbsp;The&nbsp;output&nbsp;file&nbsp;produced&nbsp;by<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;method&nbsp;can&nbsp;be&nbsp;used&nbsp;directly&nbsp;for&nbsp;input&nbsp;to&nbsp;the&nbsp;LSH&nbsp;class.<br>
+&nbsp;<br>
+&nbsp;<br>
+<font size=+2 color="red">CAVEATS:<br>
+</font>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Assuming&nbsp;that&nbsp;your&nbsp;data&nbsp;contains&nbsp;non-overlapping&nbsp;clusters,&nbsp;as&nbsp;to&nbsp;what<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sort&nbsp;of&nbsp;clustering&nbsp;results&nbsp;you'll&nbsp;get&nbsp;with&nbsp;this&nbsp;module&nbsp;depends&nbsp;a&nbsp;great<br>
+&nbsp;&nbsp;&nbsp;&nbsp;deal&nbsp;on&nbsp;your&nbsp;choice&nbsp;of&nbsp;b&nbsp;and&nbsp;r&nbsp;parameters.&nbsp;&nbsp;If&nbsp;you&nbsp;can&nbsp;make&nbsp;a&nbsp;good<br>
+&nbsp;&nbsp;&nbsp;&nbsp;guess&nbsp;at&nbsp;the&nbsp;distances&nbsp;d1&nbsp;and&nbsp;d2&nbsp;appropriate&nbsp;for&nbsp;your&nbsp;application<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(recall&nbsp;from&nbsp;the&nbsp;Introduction&nbsp;that&nbsp;we&nbsp;consider&nbsp;two&nbsp;data&nbsp;elements&nbsp;to&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;similar&nbsp;if&nbsp;their&nbsp;angular&nbsp;difference&nbsp;in&nbsp;the&nbsp;vector&nbsp;space&nbsp;is&nbsp;at&nbsp;most&nbsp;d1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;we&nbsp;consider&nbsp;them&nbsp;to&nbsp;be&nbsp;dissimilar&nbsp;if&nbsp;their&nbsp;angular&nbsp;difference&nbsp;is&nbsp;at<br>
+&nbsp;&nbsp;&nbsp;&nbsp;least&nbsp;d2&nbsp;=&nbsp;c&nbsp;*&nbsp;d1&nbsp;with&nbsp;c&nbsp;&gt;&nbsp;1),&nbsp;and&nbsp;if&nbsp;you&nbsp;can&nbsp;come&nbsp;up&nbsp;with&nbsp;the&nbsp;target<br>
+&nbsp;&nbsp;&nbsp;&nbsp;true-positive&nbsp;collision&nbsp;probability&nbsp;P1&nbsp;and&nbsp;false-positive&nbsp;collision<br>
+&nbsp;&nbsp;&nbsp;&nbsp;probability&nbsp;P2&nbsp;as&nbsp;defined&nbsp;in&nbsp;the&nbsp;Introduction,&nbsp;you&nbsp;can&nbsp;solve&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;nonlinear&nbsp;equations&nbsp;presented&nbsp;there&nbsp;for&nbsp;the&nbsp;best&nbsp;values&nbsp;to&nbsp;use&nbsp;for&nbsp;b<br>
+&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;r.<br>
+&nbsp;<br>
+&nbsp;<br>
+<font size=+2 color="red">INSTALLATION:<br>
+</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;LSH&nbsp;class&nbsp;was&nbsp;packaged&nbsp;using&nbsp;setuptools.&nbsp;&nbsp;For&nbsp;installation,&nbsp;execute<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;following&nbsp;command&nbsp;in&nbsp;the&nbsp;source&nbsp;directory&nbsp;(this&nbsp;is&nbsp;the&nbsp;directory<br>
+&nbsp;&nbsp;&nbsp;&nbsp;that&nbsp;contains&nbsp;the&nbsp;setup.py&nbsp;file&nbsp;after&nbsp;you&nbsp;have&nbsp;downloaded&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;uncompressed&nbsp;the&nbsp;package):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sudo&nbsp;python&nbsp;setup.py&nbsp;install&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;and/or,&nbsp;for&nbsp;the&nbsp;case&nbsp;of&nbsp;Python&nbsp;3,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sudo&nbsp;python3&nbsp;setup.py&nbsp;install&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;On&nbsp;Linux&nbsp;distributions,&nbsp;this&nbsp;will&nbsp;install&nbsp;the&nbsp;module&nbsp;file&nbsp;at&nbsp;a&nbsp;location&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;that&nbsp;looks&nbsp;like&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/usr/local/lib/python2.7/dist-packages/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;and,&nbsp;for&nbsp;the&nbsp;case&nbsp;of&nbsp;Python&nbsp;3,&nbsp;at&nbsp;a&nbsp;location&nbsp;that&nbsp;looks&nbsp;like&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/usr/local/lib/python3.4/dist-packages/<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;you&nbsp;do&nbsp;not&nbsp;have&nbsp;root&nbsp;access,&nbsp;you&nbsp;have&nbsp;the&nbsp;option&nbsp;of&nbsp;working&nbsp;directly<br>
+&nbsp;&nbsp;&nbsp;&nbsp;off&nbsp;the&nbsp;directory&nbsp;in&nbsp;which&nbsp;you&nbsp;downloaded&nbsp;the&nbsp;software&nbsp;by&nbsp;simply<br>
+&nbsp;&nbsp;&nbsp;&nbsp;placing&nbsp;the&nbsp;following&nbsp;statements&nbsp;at&nbsp;the&nbsp;top&nbsp;of&nbsp;your&nbsp;scripts&nbsp;that&nbsp;use<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;LSH&nbsp;class:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;import&nbsp;sys<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sys.path.append(&nbsp;"pathname_to_LSH_directory"&nbsp;)<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;To&nbsp;uninstall&nbsp;the&nbsp;module,&nbsp;simply&nbsp;delete&nbsp;the&nbsp;source&nbsp;directory,&nbsp;locate<br>
+&nbsp;&nbsp;&nbsp;&nbsp;where&nbsp;LSH&nbsp;was&nbsp;installed&nbsp;with&nbsp;"locate&nbsp;LSH"&nbsp;and&nbsp;delete&nbsp;those&nbsp;files.&nbsp;&nbsp;As<br>
+&nbsp;&nbsp;&nbsp;&nbsp;mentioned&nbsp;above,&nbsp;the&nbsp;full&nbsp;pathname&nbsp;to&nbsp;the&nbsp;installed&nbsp;version&nbsp;is&nbsp;likely<br>
+&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;look&nbsp;like&nbsp;/usr/local/lib/python2.7/dist-packages/LSH*<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;you&nbsp;want&nbsp;to&nbsp;carry&nbsp;out&nbsp;a&nbsp;non-standard&nbsp;install&nbsp;of&nbsp;the&nbsp;LSH&nbsp;module,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;look&nbsp;up&nbsp;the&nbsp;on-line&nbsp;information&nbsp;on&nbsp;Disutils&nbsp;by&nbsp;pointing&nbsp;your<br>
+&nbsp;&nbsp;&nbsp;&nbsp;browser&nbsp;to<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://docs.python.org/dist/dist.html">http://docs.python.org/dist/dist.html</a><br>
+&nbsp;<br>
+<font size=+2 color="red">ACKNOWLEDGMENTS:<br>
+</font>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;author&nbsp;has&nbsp;learned&nbsp;much&nbsp;from&nbsp;his&nbsp;LSH-related&nbsp;discussions&nbsp;with&nbsp;Tommy<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Chang&nbsp;who&nbsp;is&nbsp;currently&nbsp;finishing&nbsp;his&nbsp;Ph.D.&nbsp;in&nbsp;the&nbsp;Robot&nbsp;Vision&nbsp;Lab&nbsp;at<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Purdue.&nbsp;&nbsp;Tommy&nbsp;is&nbsp;using&nbsp;LSH&nbsp;to&nbsp;solve&nbsp;a&nbsp;truly&nbsp;big-data&nbsp;problem:&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;problem&nbsp;of&nbsp;creating&nbsp;concise&nbsp;training&nbsp;and&nbsp;testing&nbsp;datasets&nbsp;for&nbsp;wide-area<br>
+&nbsp;&nbsp;&nbsp;&nbsp;land-cover&nbsp;classification&nbsp;algorithms&nbsp;that&nbsp;must&nbsp;work&nbsp;well&nbsp;on&nbsp;hundreds&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;satellite&nbsp;images&nbsp;(as&nbsp;opposed&nbsp;to&nbsp;just&nbsp;one&nbsp;satellite&nbsp;image&nbsp;at&nbsp;a&nbsp;time,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;which&nbsp;is&nbsp;the&nbsp;norm&nbsp;in&nbsp;the&nbsp;remote-sensing&nbsp;community).&nbsp;&nbsp;Typically,&nbsp;these<br>
+&nbsp;&nbsp;&nbsp;&nbsp;images&nbsp;cover&nbsp;a&nbsp;region&nbsp;of&nbsp;the&nbsp;earth&nbsp;whose&nbsp;size&nbsp;may&nbsp;be&nbsp;as&nbsp;large&nbsp;as<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hundreds&nbsp;of&nbsp;thousands&nbsp;of&nbsp;square&nbsp;kilometers.<br>
+&nbsp;<br>
+&nbsp;<br>
+<font size=+2 color="red">ABOUT&nbsp;THE&nbsp;AUTHOR:<br>
+</font>&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;author,&nbsp;Avinash&nbsp;Kak,&nbsp;recently&nbsp;finished&nbsp;his&nbsp;17-year&nbsp;long&nbsp;Objects<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Trilogy&nbsp;project&nbsp;with&nbsp;the&nbsp;publication&nbsp;of&nbsp;the&nbsp;book&nbsp;"Designing&nbsp;with<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Objects"&nbsp;by&nbsp;John-Wiley.&nbsp;If&nbsp;interested,&nbsp;check&nbsp;out&nbsp;his&nbsp;web&nbsp;page&nbsp;at&nbsp;Purdue<br>
+&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;find&nbsp;out&nbsp;what&nbsp;the&nbsp;Objects&nbsp;Trilogy&nbsp;project&nbsp;was&nbsp;all&nbsp;about.&nbsp;You&nbsp;might<br>
+&nbsp;&nbsp;&nbsp;&nbsp;like&nbsp;"Designing&nbsp;with&nbsp;Objects"&nbsp;especially&nbsp;if&nbsp;you&nbsp;enjoyed&nbsp;reading&nbsp;Harry<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Potter&nbsp;as&nbsp;a&nbsp;kid&nbsp;(or&nbsp;even&nbsp;as&nbsp;an&nbsp;adult,&nbsp;for&nbsp;that&nbsp;matter).<br>
+&nbsp;<br>
+&nbsp;<br>
+@endofdocs</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Imported Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="numpy.html">numpy</a><br>
+<a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="random.html">random</a><br>
+<a href="re.html">re</a><br>
+</td><td width="25%" valign=top><a href="signal.html">signal</a><br>
+<a href="string.html">string</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="LocalitySensitiveHashing.html#DataGenerator">DataGenerator</a>
+</font></dt><dt><font face="helvetica, arial"><a href="LocalitySensitiveHashing.html#LocalitySensitiveHashing">LocalitySensitiveHashing</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="DataGenerator">class <strong>DataGenerator</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="DataGenerator-__init__"><strong>__init__</strong></a>(self, *args, **kwargs)</dt></dl>
+
+<dl><dt><a name="DataGenerator-gen_data_and_write_to_csv"><strong>gen_data_and_write_to_csv</strong></a>(self)</dt><dd><tt>Note&nbsp;that&nbsp;a&nbsp;unit&nbsp;cube&nbsp;in&nbsp;N&nbsp;dimensions&nbsp;has&nbsp;2^N&nbsp;corner&nbsp;points.&nbsp;&nbsp;The&nbsp;coordinates&nbsp;of&nbsp;all&nbsp;these<br>
+corner&nbsp;points&nbsp;are&nbsp;given&nbsp;by&nbsp;the&nbsp;bit&nbsp;patterns&nbsp;of&nbsp;the&nbsp;integers&nbsp;0,&nbsp;1,&nbsp;2,&nbsp;....,&nbsp;2^N&nbsp;-&nbsp;1.<br>
+For&nbsp;example,&nbsp;in&nbsp;a&nbsp;vector&nbsp;3-space,&nbsp;a&nbsp;unit&nbsp;cube&nbsp;has&nbsp;8&nbsp;corners&nbsp;whose&nbsp;coordinates&nbsp;are&nbsp;given&nbsp;by<br>
+the&nbsp;bit&nbsp;patterns&nbsp;for&nbsp;the&nbsp;integers&nbsp;0,&nbsp;1,&nbsp;2,&nbsp;3,&nbsp;4,&nbsp;5,&nbsp;6,&nbsp;7.&nbsp;&nbsp;These&nbsp;bit&nbsp;patterns&nbsp;would&nbsp;be<br>
+000,&nbsp;001,&nbsp;010,&nbsp;011,&nbsp;100,&nbsp;101,&nbsp;110,&nbsp;111.<br>
+&nbsp;<br>
+This&nbsp;script&nbsp;uses&nbsp;only&nbsp;N&nbsp;of&nbsp;the&nbsp;2^N&nbsp;vertices&nbsp;of&nbsp;a&nbsp;unit&nbsp;cube&nbsp;as&nbsp;the&nbsp;mean&nbsp;vectors&nbsp;for&nbsp;N&nbsp;<br>
+similarity&nbsp;groups.&nbsp;&nbsp;&nbsp;These&nbsp;N&nbsp;vertices&nbsp;correspond&nbsp;to&nbsp;the&nbsp;far&nbsp;points&nbsp;on&nbsp;the&nbsp;cube&nbsp;edges&nbsp;that<br>
+emanate&nbsp;at&nbsp;the&nbsp;origin.&nbsp;&nbsp;For&nbsp;example,&nbsp;when&nbsp;N=3,&nbsp;it&nbsp;uses&nbsp;only&nbsp;001,010,100&nbsp;as&nbsp;the&nbsp;three&nbsp;mean<br>
+vectors&nbsp;for&nbsp;the&nbsp;AT&nbsp;MOST&nbsp;3&nbsp;similarity&nbsp;groups.&nbsp;&nbsp;If&nbsp;needed,&nbsp;we&nbsp;can&nbsp;add&nbsp;additional&nbsp;similarity&nbsp;<br>
+groups&nbsp;by&nbsp;selecting&nbsp;additional&nbsp;coordinate&nbsp;bit&nbsp;patterns&nbsp;from&nbsp;the&nbsp;integers&nbsp;0&nbsp;through&nbsp;2^N&nbsp;-&nbsp;1.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="LocalitySensitiveHashing">class <strong>LocalitySensitiveHashing</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="LocalitySensitiveHashing-__init__"><strong>__init__</strong></a>(self, *args, **kwargs)</dt></dl>
+
+<dl><dt><a name="LocalitySensitiveHashing-display_contents_of_all_hash_bins_pre_lsh"><strong>display_contents_of_all_hash_bins_pre_lsh</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="LocalitySensitiveHashing-evaluate_quality_of_similarity_groups"><strong>evaluate_quality_of_similarity_groups</strong></a>(self, evaluation_similarity_groups)</dt><dd><tt>The&nbsp;argument&nbsp;to&nbsp;this&nbsp;method,&nbsp;evaluation_similarity_groups,&nbsp;is&nbsp;a&nbsp;list&nbsp;of&nbsp;sets,&nbsp;with&nbsp;each&nbsp;set&nbsp;being&nbsp;<br>
+a&nbsp;similarity&nbsp;group,&nbsp;which&nbsp;is&nbsp;the&nbsp;same&nbsp;thing&nbsp;as&nbsp;a&nbsp;cluster.<br>
+&nbsp;<br>
+If&nbsp;you&nbsp;plan&nbsp;to&nbsp;invoke&nbsp;this&nbsp;method&nbsp;to&nbsp;evaluate&nbsp;the&nbsp;quality&nbsp;of&nbsp;clustering&nbsp;achieved&nbsp;by&nbsp;the&nbsp;values<br>
+used&nbsp;for&nbsp;the&nbsp;parameters&nbsp;r&nbsp;and&nbsp;b,&nbsp;you'd&nbsp;want&nbsp;the&nbsp;data&nbsp;records&nbsp;in&nbsp;the&nbsp;CSV&nbsp;datafile&nbsp;to&nbsp;look&nbsp;like:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sample0_3,0.925,-0.008,0.009,0.058,0.092,0.117,-0.076,0.239,0.086,-0.149<br>
+&nbsp;<br>
+Note&nbsp;in&nbsp;particular&nbsp;the&nbsp;syntax&nbsp;used&nbsp;for&nbsp;naming&nbsp;a&nbsp;data&nbsp;record.&nbsp;The&nbsp;name&nbsp;'sample0_3'&nbsp;means&nbsp;that&nbsp;this&nbsp;<br>
+is&nbsp;the&nbsp;3rd&nbsp;sample&nbsp;generated&nbsp;randomly&nbsp;for&nbsp;data&nbsp;class&nbsp;0.&nbsp;&nbsp;The&nbsp;goal&nbsp;of&nbsp;this&nbsp;method&nbsp;is&nbsp;to&nbsp;example&nbsp;all&nbsp;<br>
+such&nbsp;&nbsp;sample&nbsp;names&nbsp;and&nbsp;figure&nbsp;out&nbsp;how&nbsp;many&nbsp;classes&nbsp;exist&nbsp;in&nbsp;the&nbsp;data.</tt></dd></dl>
+
+<dl><dt><a name="LocalitySensitiveHashing-get_data_from_csv"><strong>get_data_from_csv</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="LocalitySensitiveHashing-hash_all_data"><strong>hash_all_data</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="LocalitySensitiveHashing-hash_all_data_with_one_hyperplane"><strong>hash_all_data_with_one_hyperplane</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="LocalitySensitiveHashing-initialize_hash_store"><strong>initialize_hash_store</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="LocalitySensitiveHashing-lsh_basic_for_nearest_neighbors"><strong>lsh_basic_for_nearest_neighbors</strong></a>(self)</dt><dd><tt>Regarding&nbsp;this&nbsp;implementation&nbsp;of&nbsp;LSH,&nbsp;note&nbsp;that&nbsp;each&nbsp;row&nbsp;of&nbsp;self.<strong>htable_rows</strong>&nbsp;corresponds&nbsp;to&nbsp;<br>
+one&nbsp;hash&nbsp;function.&nbsp;&nbsp;So&nbsp;if&nbsp;you&nbsp;have&nbsp;3000&nbsp;hash&nbsp;functions&nbsp;for&nbsp;3000&nbsp;different&nbsp;randomly&nbsp;chosen&nbsp;<br>
+orientations&nbsp;of&nbsp;a&nbsp;hyperplane&nbsp;passing&nbsp;through&nbsp;the&nbsp;origin&nbsp;of&nbsp;the&nbsp;vector&nbsp;space&nbsp;in&nbsp;which&nbsp;the<br>
+numerical&nbsp;data&nbsp;is&nbsp;defined,&nbsp;this&nbsp;table&nbsp;has&nbsp;3000&nbsp;rows.&nbsp;&nbsp;Each&nbsp;column&nbsp;of&nbsp;self.<strong>htable_rows</strong>&nbsp;is&nbsp;for<br>
+one&nbsp;data&nbsp;sample&nbsp;in&nbsp;the&nbsp;vector&nbsp;space.&nbsp;&nbsp;So&nbsp;if&nbsp;you&nbsp;have&nbsp;80&nbsp;samples,&nbsp;then&nbsp;the&nbsp;table&nbsp;has&nbsp;80&nbsp;columns.<br>
+The&nbsp;output&nbsp;of&nbsp;this&nbsp;method&nbsp;consists&nbsp;of&nbsp;an&nbsp;interactive&nbsp;session&nbsp;in&nbsp;which&nbsp;the&nbsp;user&nbsp;is&nbsp;asked&nbsp;to<br>
+enter&nbsp;the&nbsp;symbolic&nbsp;name&nbsp;of&nbsp;a&nbsp;data&nbsp;record&nbsp;in&nbsp;the&nbsp;dataset&nbsp;processed&nbsp;by&nbsp;the&nbsp;LSH&nbsp;algorithm.&nbsp;The<br>
+method&nbsp;then&nbsp;returns&nbsp;the&nbsp;names&nbsp;(some&nbsp;if&nbsp;not&nbsp;all)&nbsp;of&nbsp;the&nbsp;nearest&nbsp;neighbors&nbsp;of&nbsp;that&nbsp;data&nbsp;point.</tt></dd></dl>
+
+<dl><dt><a name="LocalitySensitiveHashing-lsh_basic_for_neighborhood_clusters"><strong>lsh_basic_for_neighborhood_clusters</strong></a>(self)</dt><dd><tt>This&nbsp;method&nbsp;is&nbsp;a&nbsp;variation&nbsp;on&nbsp;the&nbsp;method&nbsp;<a href="#LocalitySensitiveHashing-lsh_basic_for_nearest_neighbors">lsh_basic_for_nearest_neighbors</a>()&nbsp;in&nbsp;the&nbsp;following<br>
+sense:&nbsp;Whereas&nbsp;the&nbsp;previous&nbsp;method&nbsp;outputs&nbsp;a&nbsp;hash&nbsp;table&nbsp;whose&nbsp;keys&nbsp;are&nbsp;the&nbsp;data&nbsp;sample&nbsp;names<br>
+and&nbsp;whose&nbsp;values&nbsp;are&nbsp;the&nbsp;immediate&nbsp;neighbors&nbsp;of&nbsp;the&nbsp;key&nbsp;sample&nbsp;names,&nbsp;this&nbsp;method&nbsp;merges<br>
+the&nbsp;keys&nbsp;with&nbsp;the&nbsp;values&nbsp;to&nbsp;create&nbsp;neighborhood&nbsp;clusters.&nbsp;&nbsp;These&nbsp;clusters&nbsp;are&nbsp;returned&nbsp;as&nbsp;<br>
+a&nbsp;list&nbsp;of&nbsp;similarity&nbsp;groups,&nbsp;with&nbsp;each&nbsp;group&nbsp;being&nbsp;a&nbsp;set.</tt></dd></dl>
+
+<dl><dt><a name="LocalitySensitiveHashing-merge_similarity_groups_with_coalescence"><strong>merge_similarity_groups_with_coalescence</strong></a>(self, similarity_groups)</dt><dd><tt>The&nbsp;purpose&nbsp;of&nbsp;this&nbsp;method&nbsp;is&nbsp;to&nbsp;do&nbsp;something&nbsp;that,&nbsp;strictly&nbsp;speaking,&nbsp;is&nbsp;not&nbsp;the&nbsp;right&nbsp;thing&nbsp;to&nbsp;do<br>
+with&nbsp;an&nbsp;implementation&nbsp;of&nbsp;LSH.&nbsp;&nbsp;We&nbsp;take&nbsp;the&nbsp;clusters&nbsp;produced&nbsp;by&nbsp;the&nbsp;method&nbsp;<br>
+<a href="#LocalitySensitiveHashing-lsh_basic_for_neighborhood_clusters">lsh_basic_for_neighborhood_clusters</a>()&nbsp;and&nbsp;we&nbsp;coalesce&nbsp;them&nbsp;based&nbsp;on&nbsp;the&nbsp;basis&nbsp;of&nbsp;shared&nbsp;data&nbsp;samples.<br>
+That&nbsp;is,&nbsp;if&nbsp;two&nbsp;neighborhood&nbsp;clusters&nbsp;represented&nbsp;by&nbsp;the&nbsp;sets&nbsp;A&nbsp;and&nbsp;B&nbsp;have&nbsp;any&nbsp;data&nbsp;elements&nbsp;in&nbsp;<br>
+common,&nbsp;we&nbsp;merge&nbsp;A&nbsp;and&nbsp;B&nbsp;by&nbsp;forming&nbsp;the&nbsp;union&nbsp;of&nbsp;the&nbsp;two&nbsp;sets.</tt></dd></dl>
+
+<dl><dt><a name="LocalitySensitiveHashing-merge_similarity_groups_with_l2norm_sample_based"><strong>merge_similarity_groups_with_l2norm_sample_based</strong></a>(self, similarity_groups)</dt><dd><tt>The&nbsp;neighborhood&nbsp;set&nbsp;coalescence&nbsp;as&nbsp;carried&nbsp;out&nbsp;by&nbsp;the&nbsp;previous&nbsp;method&nbsp;will&nbsp;generally&nbsp;result<br>
+in&nbsp;a&nbsp;clustering&nbsp;structure&nbsp;that&nbsp;is&nbsp;likely&nbsp;to&nbsp;have&nbsp;more&nbsp;clusters&nbsp;than&nbsp;you&nbsp;may&nbsp;be&nbsp;expecting&nbsp;to<br>
+find&nbsp;in&nbsp;your&nbsp;data.&nbsp;This&nbsp;method&nbsp;first&nbsp;orders&nbsp;the&nbsp;clusters&nbsp;(called&nbsp;'similarity&nbsp;groups')&nbsp;according&nbsp;<br>
+to&nbsp;their&nbsp;size.&nbsp;&nbsp;It&nbsp;then&nbsp;pools&nbsp;together&nbsp;the&nbsp;data&nbsp;samples&nbsp;in&nbsp;the&nbsp;trailing&nbsp;excess&nbsp;similarity&nbsp;groups.&nbsp;&nbsp;<br>
+Subsequently,&nbsp;for&nbsp;each&nbsp;data&nbsp;sample&nbsp;in&nbsp;the&nbsp;pool,&nbsp;it&nbsp;merges&nbsp;that&nbsp;sample&nbsp;with&nbsp;the&nbsp;closest&nbsp;larger&nbsp;<br>
+group.</tt></dd></dl>
+
+<dl><dt><a name="LocalitySensitiveHashing-merge_similarity_groups_with_l2norm_set_based"><strong>merge_similarity_groups_with_l2norm_set_based</strong></a>(self, similarity_groups)</dt><dd><tt>The&nbsp;overall&nbsp;goal&nbsp;of&nbsp;this&nbsp;method&nbsp;is&nbsp;the&nbsp;same&nbsp;as&nbsp;that&nbsp;of&nbsp;<br>
+<a href="#LocalitySensitiveHashing-merge_similarity_groups_with_l2norm_sample_based">merge_similarity_groups_with_l2norm_sample_based</a>(),&nbsp;except&nbsp;for&nbsp;the&nbsp;difference&nbsp;that<br>
+we&nbsp;now&nbsp;merge&nbsp;the&nbsp;excess&nbsp;similarity&nbsp;groups&nbsp;wholesale&nbsp;with&nbsp;the&nbsp;retained&nbsp;similarity&nbsp;<br>
+groups.&nbsp;&nbsp;For&nbsp;each&nbsp;excess&nbsp;similarity&nbsp;group,&nbsp;we&nbsp;find&nbsp;the&nbsp;closest&nbsp;retained&nbsp;similarity&nbsp;group,<br>
+closest&nbsp;in&nbsp;terms&nbsp;of&nbsp;the&nbsp;l2&nbsp;norm&nbsp;distance&nbsp;between&nbsp;the&nbsp;mean&nbsp;values&nbsp;of&nbsp;the&nbsp;two&nbsp;groups.</tt></dd></dl>
+
+<dl><dt><a name="LocalitySensitiveHashing-prune_similarity_groups"><strong>prune_similarity_groups</strong></a>(self)</dt><dd><tt>If&nbsp;your&nbsp;data&nbsp;produces&nbsp;too&nbsp;many&nbsp;similarity&nbsp;groups,&nbsp;you&nbsp;can&nbsp;get&nbsp;rid&nbsp;of&nbsp;the&nbsp;smallest&nbsp;with<br>
+this&nbsp;method.&nbsp;&nbsp;In&nbsp;order&nbsp;to&nbsp;use&nbsp;this&nbsp;method,&nbsp;you&nbsp;must&nbsp;specify&nbsp;a&nbsp;value&nbsp;for&nbsp;the&nbsp;parameter<br>
+'similarity_group_min_size_threshold'&nbsp;in&nbsp;the&nbsp;call&nbsp;to&nbsp;the&nbsp;constructor&nbsp;of&nbsp;the&nbsp;LSH&nbsp;module.</tt></dd></dl>
+
+<dl><dt><a name="LocalitySensitiveHashing-show_data_for_lsh"><strong>show_data_for_lsh</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="LocalitySensitiveHashing-show_sample_to_initial_similarity_group_mapping"><strong>show_sample_to_initial_similarity_group_mapping</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="LocalitySensitiveHashing-write_clusters_to_file"><strong>write_clusters_to_file</strong></a>(self, clusters, filename)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-Ctrl_c_handler"><strong>Ctrl_c_handler</strong></a>(signum, frame)</dt><dd><tt>#&nbsp;Needed&nbsp;for&nbsp;cleanly&nbsp;terminating&nbsp;the&nbsp;interactive&nbsp;method&nbsp;lsh_basic_for_nearest_neighbors():</tt></dd></dl>
+ <dl><dt><a name="-band_hash_group_index"><strong>band_hash_group_index</strong></a>(block_name)</dt><dd><tt>The&nbsp;keys&nbsp;of&nbsp;the&nbsp;final&nbsp;output&nbsp;that&nbsp;is&nbsp;stored&nbsp;in&nbsp;the&nbsp;hash&nbsp;self.<strong>coalesced_band_hash</strong><br>
+are&nbsp;strings&nbsp;that&nbsp;look&nbsp;like:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"block3&nbsp;10110"<br>
+&nbsp;<br>
+This&nbsp;function&nbsp;returns&nbsp;the&nbsp;block&nbsp;index,&nbsp;which&nbsp;is&nbsp;the&nbsp;integer&nbsp;that&nbsp;follows&nbsp;the&nbsp;<br>
+word&nbsp;"block"&nbsp;in&nbsp;the&nbsp;first&nbsp;substring&nbsp;in&nbsp;the&nbsp;string&nbsp;that&nbsp;you&nbsp;see&nbsp;above.</tt></dd></dl>
+ <dl><dt><a name="-cleanup_csv"><strong>cleanup_csv</strong></a>(line)</dt></dl>
+ <dl><dt><a name="-convert"><strong>convert</strong></a>(value)</dt></dl>
+ <dl><dt><a name="-deep_copy_array"><strong>deep_copy_array</strong></a>(array_in)</dt><dd><tt>Meant&nbsp;only&nbsp;for&nbsp;an&nbsp;array&nbsp;of&nbsp;scalars&nbsp;(no&nbsp;nesting):</tt></dd></dl>
+ <dl><dt><a name="-l2norm"><strong>l2norm</strong></a>(list1, list2)</dt></dl>
+ <dl><dt><a name="-sample_group_index"><strong>sample_group_index</strong></a>(sample_group_name)</dt><dd><tt>As&nbsp;the&nbsp;comment&nbsp;block&nbsp;for&nbsp;the&nbsp;previous&nbsp;function&nbsp;explains,&nbsp;the&nbsp;data&nbsp;sample<br>
+for&nbsp;LSH&nbsp;are&nbsp;supposed&nbsp;to&nbsp;have&nbsp;a&nbsp;symbolic&nbsp;name&nbsp;at&nbsp;the&nbsp;beginning&nbsp;of&nbsp;the&nbsp;<br>
+comma&nbsp;separated&nbsp;string.&nbsp;&nbsp;These&nbsp;symbolic&nbsp;names&nbsp;look&nbsp;like&nbsp;'sample0_0',&nbsp;<br>
+'sample3_4',&nbsp;etc.,&nbsp;where&nbsp;the&nbsp;first&nbsp;element&nbsp;of&nbsp;the&nbsp;name,&nbsp;such&nbsp;as&nbsp;'sample0',<br>
+indicates&nbsp;the&nbsp;group&nbsp;affiliation&nbsp;of&nbsp;the&nbsp;sample.&nbsp;&nbsp;The&nbsp;purpose&nbsp;of&nbsp;this<br>
+function&nbsp;is&nbsp;to&nbsp;return&nbsp;just&nbsp;the&nbsp;integer&nbsp;part&nbsp;of&nbsp;the&nbsp;group&nbsp;name.</tt></dd></dl>
+ <dl><dt><a name="-sample_index"><strong>sample_index</strong></a>(sample_name)</dt><dd><tt>We&nbsp;assume&nbsp;that&nbsp;the&nbsp;raw&nbsp;data&nbsp;is&nbsp;stored&nbsp;in&nbsp;the&nbsp;following&nbsp;form:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;sample0_0,0.951,-0.134,-0.102,0.079,0.12,0.123,-0.03,-0.078,0.036,0.138<br>
+&nbsp;&nbsp;&nbsp;sample0_1,1.041,0.057,0.095,0.026,-0.154,0.231,-0.074,0.005,0.055,0.14<br>
+&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;sample1_8,-0.153,1.083,0.041,0.086,-0.059,0.042,-0.172,0.014,-0.153,0.091<br>
+&nbsp;&nbsp;&nbsp;sample1_9,0.051,1.122,-0.014,-0.117,0.015,-0.044,0.011,0.008,-0.121,-0.017<br>
+&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;<br>
+This&nbsp;function&nbsp;returns&nbsp;the&nbsp;second&nbsp;integer&nbsp;in&nbsp;the&nbsp;name&nbsp;of&nbsp;each&nbsp;data&nbsp;record.<br>
+It&nbsp;is&nbsp;useful&nbsp;for&nbsp;sorting&nbsp;the&nbsp;samples&nbsp;and&nbsp;for&nbsp;visualizing&nbsp;whether&nbsp;or&nbsp;not<br>
+the&nbsp;final&nbsp;clustering&nbsp;step&nbsp;is&nbsp;working&nbsp;correctly.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>__author__</strong> = 'Avinash Kak (kak@purdue.edu)'<br>
+<strong>__copyright__</strong> = '(C) 2017 Avinash Kak. Python Software Foundation.'<br>
+<strong>__date__</strong> = '2017-May-25'<br>
+<strong>__url__</strong> = 'https://engineering.purdue.edu/kak/distLSH/LocalitySensitiveHashing-1.0.1.html'<br>
+<strong>__version__</strong> = '1.0.1'</td></tr></table>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#7799ee">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Author</strong></big></font></td></tr>
+<tr><td bgcolor="#7799ee"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Avinash&nbsp;Kak&nbsp;(kak@purdue.edu)</td></tr></table>
+</body></html>

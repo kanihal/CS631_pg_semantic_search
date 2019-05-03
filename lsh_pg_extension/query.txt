@@ -19,7 +19,7 @@ DELETE FROM hackers_features where cardinality(features)=0;
 ## TO-DO ##
 
 # creates tables for every cluster of vectors, creates a representation table.
-SELECT create_lsh_clusters('hackers_features', 'features', 'box_id;msg_id;features')
+SELECT create_lsh_clusters('hackers_features', 'features', 'text;integer;real[]'100)
 
 SELECT sender, subject, date, similarity
 FROM hackers_archive

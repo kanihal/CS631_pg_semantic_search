@@ -1,0 +1,76 @@
+Metadata-Version: 1.1
+Name: LocalitySensitiveHashing
+Version: 1.0.1
+Summary: A Python implementation of Locality Sensitive Hashing for finding nearest neighbors and clusters in multidimensional numerical data
+Home-page: https://engineering.purdue.edu/kak/distLSH/LocalitySensitiveHashing-1.0.1.html
+Author: Avinash Kak
+Author-email: kak@purdue.edu
+License: Python Software Foundation License
+Download-URL: https://engineering.purdue.edu/kak/distLSH/LocalitySensitiveHashing-1.0.1.tar.gz#md5=22057425f52f7ad352af30256ad0a2db
+Description: 
+        
+        
+        Consult the module API page at
+        
+            https://engineering.purdue.edu/kak/distLSH/LocalitySensitiveHashing-1.0.1.html
+        
+        for all information related to this module, including
+        information regarding the latest changes to the code. The
+        page at the URL shown above lists all of the module
+        functionality you can invoke in your own code.
+        
+        Locality Sensitive Hashing (LSH) is a computationally
+        efficient approach for finding nearest neighbors in large
+        datasets.  The main idea in LSH is to avoid having to
+        compare every pair of data samples in a large dataset in
+        order to find the nearest similar neighbors for the
+        different data samples.  With LSH, one can expect a data
+        sample and its closest similar neighbors to be hashed into
+        the same bucket with a high probability.  By treating the
+        data samples placed in the same bucket as candidates for
+        similarity checking, we significantly reduce the
+        computational burden associated with similarity detection in
+        large datasets.
+        
+        While LSH algorithms have traditionally been used for
+        finding nearest neighbors, this module goes a step further
+        and explores using LSH for clustering the data.  Strictly
+        speaking, this violates the basic mandate of LSH, which is
+        to return just the nearest neighbors. (A data sample X being
+        Y's nearest neighbor and Y being Z's nearest neighbor, in
+        the sense neighbors are commonly defined with the Cosine
+        metric in LSH, does not imply that X and Z will always be
+        sufficiently close to be considered each other's nearest
+        neighbors.)  Nonetheless, if you believe that your datafile
+        consists of non-overlapping data clusters, this module may
+        do a decent job of finding those clusters.
+        
+        Typical usage syntax for invoking LocalitySensitiveHashing
+        in your own code:
+        
+        ::
+        
+                from LocalitySensitiveHashing import *
+                datafile = "data_for_lsh.csv"
+                lsh = LocalitySensitiveHashing( 
+                                   datafile = datafile,
+                                   dim = 10,
+                                   r = 50,         
+                                   b = 100,        
+                                   expected_num_of_clusters = 10,
+                          )
+                lsh.get_data_from_csv()
+                lsh.initialize_hash_store()
+                lsh.hash_all_data()
+                similarity_groups = lsh.lsh_basic_for_neighborhood_clusters()
+                coalesced_similarity_groups = lsh.merge_similarity_groups_with_coalescence( similarity_groups )
+                merged_similarity_groups = lsh.merge_similarity_groups_with_l2norm_sample_based( coalesced_similarity_groups )
+                lsh.write_clusters_to_file( merged_similarity_groups, "clusters.txt" )
+        
+        
+                  
+Keywords: locality sensitive hashing,nearest neighbor calculation,hashing with hyperplanes,clustering
+Platform: All platforms
+Classifier: Topic :: Utilities
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.5

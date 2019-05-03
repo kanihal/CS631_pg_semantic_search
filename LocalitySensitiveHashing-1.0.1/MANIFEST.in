@@ -1,0 +1,19 @@
+include MANIFEST.in
+include setup.py
+include Makefile
+include README
+include LocalitySensitiveHashing/LocalitySensitiveHashing.py
+include LocalitySensitiveHashing/__init__.py
+include LocalitySensitiveHashing-1.0.1.html
+include TestLSH/LocalitySensitiveHashing.py
+include TestLSH/Test.py
+include TestLSH/TestHashStoreInitialization.py
+include TestLSH/TestLSHDataExtraction.py
+include TestLSH/data_for_lsh.csv
+include Examples/LSH_basic_for_demonstrating_nearest_neighbors.py
+include Examples/Clustering_with_LSH_with_sample_based_merging.py
+include Examples/Clustering_with_LSH_with_set_based_merging.py
+include Examples/data_for_lsh.csv
+include Examples/gen_data.py
+include Examples/README
+

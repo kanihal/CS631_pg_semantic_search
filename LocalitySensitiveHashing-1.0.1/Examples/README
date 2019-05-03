@@ -1,0 +1,42 @@
+
+                       README for the Examples Directory
+                       *********************************
+
+The Examples directory contains the following scripts:
+
+
+    1.  LSH_basic_for_demonstrating_nearest_neighbors.py
+
+            This script demonstrates the functionality one traditionally associates
+            with the LSH algorithm --- finding nearest neighbors.  This script places
+            the user in an interactive session in which the user is asked to enter
+            the symbolic name of a data record in the datafile that was processed by
+            the LSH algorithm.  Subsequently, the user is shown the nearest neighbors
+            of that record.
+
+
+    2.  Clustering_with_LSH_with_sample_based_merging.py
+
+            This is one of the two scripts in the Examples directory that attempt to
+            cluster the data that is supplied to the module through a CSV file. The
+            data is clustered on the basis of the neighborhoods supplied by the LSH
+            algorithm.  If the coalescence of the LSH generated neighborhood creates
+            more cluster than expected, this script calls on the
+            merge_similarity_groups_with_l2norm_sample_based() to merge excess small
+            clusters with the main retained clusters.
+
+
+    3.  Clustering_with_LSH_with_set_based_merging.py     
+
+            This is the second of the cluster producing scripts in the Examples
+            directory.  Again, the starting points for forming the clusters are the
+            neighborhoods supplied by the LSH algorithm.  Unlike the previous script,
+            this script calls on the merge_similarity_groups_with_l2norm_set_based()
+            to merge excess small clusters with the main retained clusters.
+
+    4.  gen_data.py
+
+            This script uses the DataGenerator class that comes with the LSH module
+            to generate multi-variate Gaussian data for experimenting with the LSH
+            module.  The output file produced by this method can be used directly for
+            input to the LSH class.
