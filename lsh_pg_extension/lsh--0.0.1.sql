@@ -5,18 +5,19 @@ AS $$
     query="SELECT * FROM "+tablename
     feature_table=plpy.execute(query)
     nrows=feature_table.nrows()
-    colnames=feature_table.colnames()
-    data_dictionary={}
-    keys_dict=[";".join([str(feature_table[i][colname]) for colname in colnames.remove(colname_feature)]) for i in range(0,nrows)]
+    exp_clusters=int(0.1*nrows)
+    exp_elems_cluster=float(nrows)/exp_clusters
+    keys_lshdict=[ "sample"+str(i%exp_elems_cluster)+"_"+str(i) for i in range(nrows)]
+    lsh_dictionary={}
     values_dict=[feature_table[i][colname_feature] for i in range(0,nrows)]
-    for i in range(0,nrows):
-        data_dictionary[keys_dict[i]]=values_dict[i]
+    for i in range(nrows):
+        lsh_dictionary[keys_lshdict[i]]=values_dict[i]
     lsh = LocalitySensitiveHashing( 
-                   datafile = data_dictionary,       # dictionary of [key(sampleid):value(list containing vector values as floats)]
+                   datafile = lsh_dictionary,       # dictionary of [key(sampleid):value(list containing vector values as floats)]
                    dim = dimension,       # needs modification
                    r = 50,                # number of rows in each band for r-wise AND in each band
                    b = 100,               # number of bands for b-wise OR over all b bands
-                   expected_num_of_clusters = 10,
+                   expected_num_of_clusters = exp_clusters,
           )
     lsh.get_data()
     #lsh.show_data_for_lsh()
@@ -28,13 +29,13 @@ AS $$
     #merged_similarity_groups = lsh.merge_similarity_groups_with_l2norm_sample_based( coalesced_similarity_groups )
     #lsh.write_clusters_to_file( merged_similarity_groups, "clusters.txt" )
     
-    #data_dictionary={}
-    #csv_file=open(path)
-    #csv_reader=csv.reader(csv_file,delimiter=',')
-    #for row in csv_reader:
-    #    data_dictionary[row[0]]="".join(row[1:])
-    
+    colnames=feature_table.colnames()
+    data_dictionary={}
+    keys_dict=[";".join([str(feature_table[i][colname]) for colname in colnames.remove(colname_feature)]) for i in range(0,nrows)]
+    for i in range(nrows):
+        data_dictionary[keys_lshdict[i]]=keys_dict[i]
     colnames.append(colname_feature)
+    
     coltypes=coltypes.split(";")
     GD['cluster_representation_tablename']='CLUSTER_REPRESENTATION'
     query="CREATE TABLE "+GD['cluster_representation_tablename']+" ( "
@@ -50,14 +51,14 @@ AS $$
         query=query+colnames[i]+" "+coltypes[i]+", "
         plpy.execute(query)
         for v in cluster:
-            col_values=v.split(';') 
-            col_vector="".join(data_dictionary[v])
+            col_values=data_dictionary[v].split(';') 
+            col_vector="".join(lsh_dictionary[v])
             query="INSERT INTO "+tablename+" ("+", ".join(colnames)+") "
             query=query+"VALUES ("+", ".join(col_values)+","+col_vector+");"
             plpy.execute(query)
         # add first element of each cluster as representative element
         query="INSERT INTO "+GD['cluster_representation_tablename']+" ("+", ".join(colnames)+",cluster_tablename) "
-        query=query+"VALUES ("+", ".join(cluster[0].split(';'))+","+"".join(data_dictionary[cluster[0]])+","+tablename+");"
+        query=query+"VALUES ("+", ".join(data_dictionary[cluster[0]].split(';'))+","+"".join(lsh_dictionary[cluster[0]])+","+tablename+");"
         plpy.execute(query)
         i=i+1
     return GD['cluster_representation_tablename']
