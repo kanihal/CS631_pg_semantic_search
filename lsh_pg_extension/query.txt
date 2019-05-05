@@ -15,11 +15,10 @@ INSERT INTO hackers_bad_features SELECT box_id, msg_id,features from hackers_fea
 
 DELETE FROM hackers_features where cardinality(features)=0;
 
-# output hackers_features as csv, see sample csv for LSH package. Concatenate values in columns other than the vector using ';'. Last column for vector.
-## TO-DO ##
-
 # creates tables for every cluster of vectors, creates a representation table.
-SELECT create_lsh_clusters('hackers_features', 'features', 'text;integer;real[]'100)
+SELECT create_lsh_clusters('hackers_features', 'features', 'text;integer;real[]', 100)
+
+EXECUTE "SELECT * FROM "||get_lsh_cluster(transform_to_model('wal checksum performance'),'hackers_features','features')) INTO results 
 
 SELECT sender, subject, date, similarity
 FROM hackers_archive
@@ -28,7 +27,7 @@ NATURAL JOIN
           msg_id,
           dotproduct(features, lookup_features) AS similarity
    FROM
-     (SELECT * FROM get_lsh_cluster(transform_to_model('wal checksum performance'),'features')) AS cluster	
+     (results	
        CROSS JOIN
      (SELECT transform_to_model('wal checksum performance') AS lookup_features) AS lookup) AS temp_sim
    ORDER BY similarity DESC

@@ -7,7 +7,7 @@ AS $$
     nrows=feature_table.nrows()
     exp_clusters=int(0.1*nrows)
     exp_elems_cluster=float(nrows)/exp_clusters
-    keys_lshdict=[ "sample"+str(i%exp_elems_cluster)+"_"+str(i) for i in range(nrows)]
+    keys_lshdict=["sample"+str(i%exp_elems_cluster)+"_"+str(i) for i in range(nrows)]
     lsh_dictionary={}
     values_dict=[feature_table[i][colname_feature] for i in range(0,nrows)]
     for i in range(nrows):
@@ -64,12 +64,10 @@ AS $$
     return GD['cluster_representation_tablename']
 $$ LANGUAGE plpython3u;
 
-CREATE OR REPLACE FUNCTION get_lsh_cluster(input text, feature_colname text) RETURNS text 
+CREATE OR REPLACE FUNCTION get_lsh_cluster(input text, tablename text, feature_colname text) RETURNS text
 AS $$
     query="SELECT dotproduct("+feature_colname+","+text+") AS similarity,cluster_tablename FROM "+GD["cluster_representation_tablename"]+" ORDER BY similarity DESC LIMIT 1"  
     rv=plpy.execute(query)
     cluster_tablename=rv[0]['cluster_tablename']
-    query="SELECT * FROM "+cluster_tablename
-    cluster_table=plpy.execute(query)
-    return cluster_table
+    return cluster_tablename
 $$ LANGUAGE plpython3u;
