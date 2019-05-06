@@ -1,10 +1,12 @@
-Metadata-Version: 1.1
+Metadata-Version: 1.2
 Name: LocalitySensitiveHashing
 Version: 1.0.1
 Summary: A Python implementation of Locality Sensitive Hashing for finding nearest neighbors and clusters in multidimensional numerical data
 Home-page: https://engineering.purdue.edu/kak/distLSH/LocalitySensitiveHashing-1.0.1.html
 Author: Avinash Kak
 Author-email: kak@purdue.edu
+Maintainer: Avinash Kak
+Maintainer-email: kak@purdue.edu
 License: Python Software Foundation License
 Download-URL: https://engineering.purdue.edu/kak/distLSH/LocalitySensitiveHashing-1.0.1.tar.gz#md5=22057425f52f7ad352af30256ad0a2db
 Description: 

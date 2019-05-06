@@ -828,7 +828,7 @@ class LocalitySensitiveHashing(object):
         self.pruned_similarity_groups = []
         self.evaluation_classes = {}             # Used for evaluation of clustering quality if data in particular format
 
-    def get_data(self):
+    def get_data_from_csv(self):
         '''
         if not self.datafile.endswith('.csv'): 
             Exception("Aborted. get_training_data_from_csv() is only for CSV files")

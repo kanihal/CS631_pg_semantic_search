@@ -829,21 +829,22 @@ class LocalitySensitiveHashing(object):
         self.evaluation_classes = {}             # Used for evaluation of clustering quality if data in particular format
 
     def get_data_from_csv(self):
+        '''
         if not self.datafile.endswith('.csv'): 
             Exception("Aborted. get_training_data_from_csv() is only for CSV files")
+        '''
         data_dict = {}
-        with open(self.datafile) as f:
-            for i,line in enumerate(f):
-                if line.startswith("#"): continue      
-                record = cleanup_csv(line) if self._csv_cleanup_needed else line
-                parts = record.rstrip().split(r',')
-                data_dict[parts[0].strip('"')] = list(map(lambda x: convert(x), parts[1:]))
-                if i%10000 == 0:
-                    print('.'),
-                    sys.stdout.flush()
+        i=0
+        for key in self.datafile:
+            # if line.startswith("#"): continue      
+            # record = cleanup_csv(line) if self._csv_cleanup_needed else line
+            i=i+1
+            data_dict[key.strip('"')] = self.datafile[key]
+            if i%10000 == 0:
+                print('.'),
+                sys.stdout.flush()
                 sys.stdout = sys.__stdout__
-            f.close() 
-        self.how_many_data_samples = i + 1
+        self.how_many_data_samples = len(data_dict)
         self._data_dict = data_dict
 
     def show_data_for_lsh(self):
@@ -1341,7 +1342,7 @@ if __name__ == '__main__':
     data_gen.gen_data_and_write_to_csv()
     '''
 
-
+    '''
     lsh = LocalitySensitiveHashing( datafile = "data_for_lsh.csv",  
                                     dim = 10,
                                     r = 5,                              # number of rows in each band
@@ -1354,4 +1355,4 @@ if __name__ == '__main__':
     lsh.display_contents_of_all_hash_bins_pre_lsh()
     lsh.lsh_basic_for_neighborhood_clusters()
     lsh.show_sample_to_similarity_group_mapping()
-
+    '''
