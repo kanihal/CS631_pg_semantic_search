@@ -1,6 +1,6 @@
 # PostgreSQL plugin for semantic Search
 
-This is an experimental extension for latent semantic Indexing(LSI) and clustering using LSI features.
+These are experimental extensions for latent semantic Indexing(LSI) and clustering using LSI features.
 
 
 ## Building the model
